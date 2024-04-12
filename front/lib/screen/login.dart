@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:http/http.dart';
 import 'package:jwt_decoder/jwt_decoder.dart'; // jwt 토큰 디코더
 import 'package:flutter_secure_storage/flutter_secure_storage.dart'; // 암호화 저장 토큰저장시 씀
 //메롱
@@ -7,6 +8,9 @@ import 'package:front/screen/register.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import '../model/user.dart';
+
+TextEditingController usernameController = TextEditingController();
+TextEditingController passwordController = TextEditingController();
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -20,17 +24,16 @@ class LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    User user = User("", "");
     final storage = FlutterSecureStorage();
-    Future login() async {
+    Future login(String username, String password) async {
       try {
-        var response = await http.post(
-          Uri.parse('server uri'),
-          headers: {'Context-Type': 'application/json'},
+        Response response = await http.post(
+          Uri.parse('server uri'), // 필요한 URI로 변경할 것
+          headers: {'Content-Type': 'application/json'},
           body: json.encode(
             {
-              'username': user.username,
-              'password': user.password,
+              'email': username,
+              'password': password,
             },
           ),
         );
@@ -39,10 +42,14 @@ class LoginState extends State<Login> {
         if (response.statusCode == 200) {
           Map<String, dynamic> responseBody =
               json.decode(response.body); // 반환값 디코드
-          String token = responseBody['accessToken'];
-          await storage.write(key: 'accessToken', value: token);
-        } else
-          (print('failed')); // 에러코드
+          String? token = responseBody['accessToken'];
+          if (token != null) {
+            await storage.write(key: 'accessToken', value: token);
+            print('Login successful.');
+          }
+        } else {
+          print('login failed');
+        }
       } catch (e) {
         print(e.toString()); // 변칙 생겼을 때
       }
@@ -106,11 +113,10 @@ class LoginState extends State<Login> {
                           height: 60,
                         ),
                         TextFormField(
-                          controller:
-                              TextEditingController(text: user.username),
-                          onChanged: (val) {
-                            user.username = val;
-                          },
+                          controller: usernameController,
+                          // onFieldSubmitted: (val) {
+                          //   엔터시 로그인
+                          // },
                           validator: (value) {
                             if (value!.isEmpty) {
                               return 'username is Empty';
@@ -147,10 +153,11 @@ class LoginState extends State<Login> {
                           height: 10,
                         ),
                         TextFormField(
-                          controller:
-                              TextEditingController(text: user.password),
-                          onChanged: (val) {
-                            user.password = val;
+                          controller: passwordController,
+                          onFieldSubmitted: (val) {
+                            String username = usernameController.text;
+                            String password = passwordController.text;
+                            login(username, password);
                           },
                           validator: (value) {
                             if (value!.isEmpty) {
@@ -248,7 +255,9 @@ class LoginState extends State<Login> {
                   width: 60,
                   child: TextButton(
                     onPressed: () {
-                      login();
+                      String username = usernameController.text;
+                      String password = passwordController.text;
+                      login(username, password);
                     },
                     style: TextButton.styleFrom(
                       backgroundColor: Colors.blue.shade200,
