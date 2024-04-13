@@ -8,6 +8,7 @@ import 'package:front/screen/register.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import '../model/user.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 TextEditingController usernameController = TextEditingController();
 TextEditingController passwordController = TextEditingController();
@@ -27,15 +28,16 @@ class LoginState extends State<Login> {
     final storage = FlutterSecureStorage();
     Future login(String username, String password) async {
       try {
+        String loginUri = dotenv.env['LOGIN_URI']!;
+
         Response response = await http.post(
-          Uri.parse('server uri'), // 필요한 URI로 변경할 것
-          headers: {'Content-Type': 'application/json'},
-          body: json.encode(
-            {
-              'email': username,
-              'password': password,
-            },
-          ),
+          Uri.parse(loginUri),
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+          body: {
+            'username': username,
+            'password': password,
+          },
+          encoding: Encoding.getByName('utf-8'),
         );
         /* Map<String, dynamic> decodedToken =
               JwtDecoder.decode(token); 이름 accessToken 인거 token에 넣기 */
@@ -47,6 +49,8 @@ class LoginState extends State<Login> {
             await storage.write(key: 'accessToken', value: token);
             print('Login successful.');
           }
+          print(
+              "RESPONSE ${response.statusCode} ; BODY = ${response.body}"); // 디버깅용
         } else {
           print('login failed');
         }
