@@ -25,8 +25,8 @@ class RegisterState extends State<Register> {
 
         var response = await http.post(
           Uri.parse(registerUri),
-          headers: {'Content-Type': 'application/json'},
-          body: json.encode(
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+          body: (
             {
               'username': username,
               'password': password,
@@ -37,8 +37,7 @@ class RegisterState extends State<Register> {
           print('create account');
           print(response.body);
         } else {
-          print(response.statusCode);
-          print(response.body);
+          print('fail');
         }
       } catch (e) {
         print(e.toString());
