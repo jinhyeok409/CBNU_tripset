@@ -26,12 +26,10 @@ class RegisterState extends State<Register> {
         var response = await http.post(
           Uri.parse(registerUri),
           headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-          body: (
-            {
-              'username': username,
-              'password': password,
-            },
-          ),
+          body: {
+            'username': username,
+            'password': password,
+          },
         );
         if (response.statusCode == 200) {
           print('create account');
