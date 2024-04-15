@@ -19,14 +19,13 @@ class Register extends StatefulWidget {
 class RegisterState extends State<Register> {
   @override
   Widget build(BuildContext context) {
-    User user = User("", "");
     Future register(String username, String password) async {
       try {
-        String registerUri = dotenv.env['REGSTER_URI']!;
+        String registerUri = dotenv.env['REGISTER_URI']!;
 
         var response = await http.post(
           Uri.parse(registerUri),
-          headers: {'Context-Type': 'application/json'},
+          headers: {'Content-Type': 'application/json'},
           body: json.encode(
             {
               'username': username,
@@ -37,8 +36,10 @@ class RegisterState extends State<Register> {
         if (response.statusCode == 200) {
           print('create account');
           print(response.body);
-        } else
-          (print('failed'));
+        } else {
+          print(response.statusCode);
+          print(response.body);
+        }
       } catch (e) {
         print(e.toString());
       }
@@ -96,6 +97,11 @@ class RegisterState extends State<Register> {
                         ),
                         TextFormField(
                           controller: usernameController,
+                          onFieldSubmitted: (val) {
+                            String username = usernameController.text;
+                            String password = passwordController.text;
+                            register(username, password);
+                          },
                           style: TextStyle(
                             color: Colors.blue.shade200,
                             fontSize: 15,
@@ -127,6 +133,11 @@ class RegisterState extends State<Register> {
                         ),
                         TextFormField(
                           controller: passwordController,
+                          onFieldSubmitted: (val) {
+                            String username = usernameController.text;
+                            String password = passwordController.text;
+                            register(username, password);
+                          },
                           style: TextStyle(
                             color: Colors.blue.shade200,
                             fontSize: 15,
@@ -182,8 +193,9 @@ class RegisterState extends State<Register> {
                   width: 60,
                   child: TextButton(
                     onPressed: () {
-                      register(usernameController.text.toString(),
-                          passwordController.text.toString());
+                      String username = usernameController.text;
+                      String password = passwordController.text;
+                      register(username, password);
                     },
                     style: TextButton.styleFrom(
                       backgroundColor: Colors.blue.shade200,
