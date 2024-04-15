@@ -1,9 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import '../model/user.dart';
+
+TextEditingController usernameController = TextEditingController();
+TextEditingController passwordController = TextEditingController();
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -16,15 +20,17 @@ class RegisterState extends State<Register> {
   @override
   Widget build(BuildContext context) {
     User user = User("", "");
-    Future register() async {
+    Future register(String username, String password) async {
       try {
+        String registerUri = dotenv.env['REGSTER_URI']!;
+
         var response = await http.post(
-          Uri.parse('server uri'),
+          Uri.parse(registerUri),
           headers: {'Context-Type': 'application/json'},
           body: json.encode(
             {
-              'username': user.username,
-              'password': user.password,
+              'username': username,
+              'password': password,
             },
           ),
         );
@@ -89,17 +95,7 @@ class RegisterState extends State<Register> {
                           height: 60,
                         ),
                         TextFormField(
-                          controller:
-                              TextEditingController(text: user.username),
-                          onChanged: (val) {
-                            user.username = val;
-                          },
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'username is Empty';
-                            }
-                            return '';
-                          },
+                          controller: usernameController,
                           style: TextStyle(
                             color: Colors.blue.shade200,
                             fontSize: 15,
@@ -130,17 +126,7 @@ class RegisterState extends State<Register> {
                           height: 10,
                         ),
                         TextFormField(
-                          controller:
-                              TextEditingController(text: user.password),
-                          onChanged: (val) {
-                            user.password = val;
-                          },
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'password is Empty';
-                            }
-                            return '';
-                          },
+                          controller: passwordController,
                           style: TextStyle(
                             color: Colors.blue.shade200,
                             fontSize: 15,
@@ -196,7 +182,8 @@ class RegisterState extends State<Register> {
                   width: 60,
                   child: TextButton(
                     onPressed: () {
-                      register();
+                      register(usernameController.text.toString(),
+                          passwordController.text.toString());
                     },
                     style: TextButton.styleFrom(
                       backgroundColor: Colors.blue.shade200,
