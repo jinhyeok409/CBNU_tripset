@@ -1,0 +1,6 @@
+#Flutter plugin
+.idea/
+
+### macOS ###
+# General
+.DS_Store
