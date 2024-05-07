@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get_rx/get_rx.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:front/model/post.dart';
 import 'package:get/get.dart';
 import '../bottom_navigation_bar.dart';
 
@@ -150,37 +151,6 @@ class PostList extends StatelessWidget {
 }
 
 // Post 모델
-class Post {
-  final int id;
-  final String title;
-  final String content;
-  final DateTime createDate;
-  final String authorName;
-  final int commentCount;
-  final int likeCount;
-
-  Post({
-    required this.id,
-    required this.title,
-    required this.content,
-    required this.createDate,
-    required this.authorName,
-    required this.commentCount,
-    required this.likeCount,
-  });
-
-  factory Post.fromJson(Map<String, dynamic> json) {
-    return Post(
-      id: json['id'],
-      title: json['title'],
-      content: json['content'],
-      createDate: DateTime.parse(json['createDate']),
-      authorName: json['author']['username'],
-      commentCount: json['commentDTOList'].length,
-      likeCount: json['likeCount'],
-    );
-  }
-}
 
 // 서버에서 데이터 받아오기
 class PostService extends GetConnect {
