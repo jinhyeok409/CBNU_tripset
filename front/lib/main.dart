@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+<<<<<<< Updated upstream
+=======
+import 'package:front/screen/detail_page.dart';
+import 'package:get/get.dart';
+>>>>>>> Stashed changes
 import 'screen/login.dart';
+import 'screen/detail_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart'; // env 파일 넣기
 
 // import 'screen/home.dart'; // 홈화면 디버깅시 추가
@@ -11,7 +17,7 @@ void main() async {
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Login(),
+      home: DetailPage(),
     ),
   );
 }
