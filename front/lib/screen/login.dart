@@ -50,8 +50,8 @@ class LoginState extends State<Login> {
           if (token != null) {
             await storage.write(key: 'accessToken', value: token);
             print('Login successful.');
+            Get.to(Home());
           }
-          Get.to(Home());
         } else {
           print('login failed');
         }

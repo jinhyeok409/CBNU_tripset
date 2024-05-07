@@ -28,6 +28,7 @@ class PostList extends StatelessWidget {
     final PostCategoryController postCategoryController =
         Get.put(PostCategoryController());
     return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
           appBar: AppBar(
             toolbarHeight: 100,
@@ -149,8 +150,6 @@ class PostList extends StatelessWidget {
     );
   }
 }
-
-// Post 모델
 
 // 서버에서 데이터 받아오기
 class PostService extends GetConnect {
