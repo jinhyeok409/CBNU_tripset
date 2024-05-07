@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 
-class DetailPage extends StatefulWidget {
-  const DetailPage({super.key});
-
-  @override
-  State<DetailPage> createState() => _DetailPageState();
+void main() {
+  runApp(DetailPage());
 }
 
-class _DetailPageState extends State<DetailPage> {
+class DetailPage extends StatelessWidget {
+  const DetailPage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(

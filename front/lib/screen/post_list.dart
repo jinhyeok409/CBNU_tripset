@@ -190,7 +190,7 @@ class PostService extends GetConnect {
     if (response.status.hasError) {
       throw Exception('게시글 불러오기 실패');
     }
-    List<dynamic> data = response.body;
+    List<dynamic> data = response.body.posts;
     return data.map((json) => Post.fromJson(json)).toList();
   }
 }

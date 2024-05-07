@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:front/screen/home.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart';
 import 'package:jwt_decoder/jwt_decoder.dart'; // jwt 토큰 디코더
 import 'package:flutter_secure_storage/flutter_secure_storage.dart'; // 암호화 저장 토큰저장시 씀
@@ -30,7 +32,7 @@ class LoginState extends State<Login> {
       try {
         String loginUri = dotenv.env['LOGIN_URI']!;
 
-        Response response = await http.post(
+        var response = await http.post(
           Uri.parse(loginUri),
           headers: {'Content-Type': 'application/x-www-form-urlencoded'},
           body: {
@@ -49,8 +51,7 @@ class LoginState extends State<Login> {
             await storage.write(key: 'accessToken', value: token);
             print('Login successful.');
           }
-          print(
-              "RESPONSE ${response.statusCode} ; BODY = ${response.body}"); // 디버깅용
+          Get.to(Home());
         } else {
           print('login failed');
         }

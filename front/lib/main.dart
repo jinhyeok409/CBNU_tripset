@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-<<<<<<< Updated upstream
-=======
 import 'package:front/screen/detail_page.dart';
 import 'package:get/get.dart';
->>>>>>> Stashed changes
+import 'package:get/get_core/get_core.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'screen/login.dart';
 import 'screen/detail_page.dart';
+import 'package:http/http.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart'; // env 파일 넣기
 
 // import 'screen/home.dart'; // 홈화면 디버깅시 추가
@@ -15,9 +15,9 @@ void main() async {
   String serverUri = dotenv.env['SERVER_URI']!;
   print('서버 URI: $serverUri');
   runApp(
-    MaterialApp(
+    GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      home: DetailPage(),
+      home: Login(),
     ),
   );
 }
