@@ -15,7 +15,7 @@ class Home extends StatelessWidget {
         extendBodyBehindAppBar: true,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
-          toolbarHeight: 100,
+          toolbarHeight: 80,
           title: Row(
             children: [
               Padding(padding: EdgeInsets.fromLTRB(10, 0, 0, 100)),
@@ -24,7 +24,7 @@ class Home extends StatelessWidget {
               Text(
                 'TRIPSET.',
                 style: TextStyle(
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.bold,
                   color: Color(0xFFB0D1F8),
                   fontSize: 40,
                 ),
