@@ -24,7 +24,7 @@ class Post {
       content: json['content'],
       createDate: DateTime.parse(json['createDate']),
       authorName: json['author']['username'],
-      commentCount: json['commentDTOList'].length,
+      commentCount: json['commentCount'],
       likeCount: json['likeCount'],
     );
   }

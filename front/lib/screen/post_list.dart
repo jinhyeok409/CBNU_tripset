@@ -1,23 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_rx/get_rx.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:front/model/post.dart';
 import 'package:get/get.dart';
 import '../bottom_navigation_bar.dart';
+import '../controller/infinite_scroll_controller.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
   runApp(PostList());
-}
-
-class PostCategoryController extends GetxController {
-  RxInt currentCategory = 0.obs;
-
-  void selectCategory(int index) {
-    currentCategory.value = index;
-    print('selected Category value is ${currentCategory.value}');
-  }
 }
 
 class PostList extends StatelessWidget {
@@ -25,8 +17,8 @@ class PostList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final PostCategoryController postCategoryController =
-        Get.put(PostCategoryController());
+    final PostListScrollController postListScrollController =
+        Get.put(PostListScrollController());
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -42,45 +34,76 @@ class PostList extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          InkWell(
+                          Obx(
+                            () => InkWell(
                               onTap: () {
-                                postCategoryController.selectCategory(0);
-                                // 자유게시판으로 이동 추후 구현
+                                postListScrollController.currentCategory.value =
+                                    'ALL';
+                                postListScrollController.nextLink.value = '';
+                                postListScrollController.reload();
+                                // 전체게시판으로 이동 추후 구현
                               },
-                              child: Obx(
-                                () => Text(
-                                  '자유',
-                                  style: TextStyle(
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.w700,
-                                      color: (postCategoryController
-                                                  .currentCategory.value ==
-                                              0)
-                                          ? Color(0xFF1E1E1E)
-                                          : Color(0xFFAFAFAF)),
-                                ),
-                              )),
+                              child: Text(
+                                '전체',
+                                style: TextStyle(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.w700,
+                                    color: (postListScrollController
+                                                .currentCategory.value ==
+                                            'ALL')
+                                        ? Color(0xFF1E1E1E)
+                                        : Color(0xFFAFAFAF)),
+                              ),
+                            ),
+                          ),
                           SizedBox(
                             width: 25,
                           ),
-                          InkWell(
+                          Obx(
+                            () => InkWell(
                               onTap: () {
-                                postCategoryController.selectCategory(1);
-                                // 계획게시판으로 이동 추후 구현
+                                postListScrollController.currentCategory.value =
+                                    'FREE';
+                                postListScrollController.nextLink.value = '';
+                                postListScrollController.reload();
+                                // 자유게시판으로 이동 추후 구현
                               },
-                              child: Obx(
-                                () => Text(
+                              child: Text(
+                                '자유',
+                                style: TextStyle(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.w700,
+                                    color: (postListScrollController
+                                                .currentCategory.value ==
+                                            'FREE')
+                                        ? Color(0xFF1E1E1E)
+                                        : Color(0xFFAFAFAF)),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 25,
+                          ),
+                          Obx(() => InkWell(
+                                onTap: () {
+                                  postListScrollController
+                                      .currentCategory('PLAN');
+                                  postListScrollController.nextLink.value = '';
+                                  postListScrollController.reload();
+                                  // 계획게시판으로 이동 추후 구현
+                                },
+                                child: Text(
                                   '계획',
                                   style: TextStyle(
                                       fontSize: 25,
                                       fontWeight: FontWeight.w700,
-                                      color: (postCategoryController
+                                      color: (postListScrollController
                                                   .currentCategory.value ==
-                                              1)
+                                              'PLAN')
                                           ? Color(0xFF1E1E1E)
                                           : Color(0xFFAFAFAF)),
                                 ),
-                              ))
+                              )),
                         ],
                       ),
 
@@ -130,6 +153,8 @@ class PostList extends StatelessWidget {
               ),
             ),
           ]),
+
+          // 게시글 작성 버튼
           floatingActionButton: Padding(
               padding: const EdgeInsets.only(bottom: 80),
               child: SizedBox(
@@ -151,45 +176,42 @@ class PostList extends StatelessWidget {
   }
 }
 
-// 서버에서 데이터 받아오기
-class PostService extends GetConnect {
-  Future<List<Post>> getPosts() async {
-    String postUri = dotenv.env['POST_URI']!;
-    Response response = await get(postUri);
-    if (response.status.hasError) {
-      throw Exception('게시글 불러오기 실패');
-    }
-    List<dynamic> data = response.body['posts'];
-    return data.map((json) => Post.fromJson(json)).toList();
-  }
-}
-
 // 게시글 목록
 class PostListView extends StatelessWidget {
-  const PostListView({super.key});
+  final postListScrollController = Get.find<PostListScrollController>();
+  PostListView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 75),
-      child: FutureBuilder(
-        future: PostService().getPosts(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
-          } else if (snapshot.hasError) {
-            return Center(
-                child: Text(
-              '오류 발생.\n다시 시도해주세요.',
-              style: TextStyle(fontSize: 30),
-            ));
-          } else {
-            List<Post> posts = snapshot.data!;
-            return ListView.separated(
-              itemCount: posts.length,
-              separatorBuilder: (context, index) => Divider(),
-              itemBuilder: (context, index) {
-                Post post = posts[index];
+      child: Obx(() {
+        if (postListScrollController.isLoading.value &&
+            postListScrollController.posts.isEmpty) {
+          // 데이터를 로딩 중이며 불러온 게시물이 없을 때
+          print('loaing posts...');
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (!postListScrollController.isLoading.value &&
+            postListScrollController.posts.isEmpty) {
+          // 로딩하지 않는 중이며 불러온 게시글이 없을 때
+          print('loading: ${postListScrollController.isLoading.value}');
+          print('postEmpty: ${postListScrollController.posts.isEmpty}');
+          return Center(
+            child: Text('게시물이 없습니다.'),
+          );
+        } else {
+          // 데이터가 있는 경우 게시물 목록 표시
+          return ListView.separated(
+            controller: postListScrollController.scrollController.value,
+            itemCount: postListScrollController.posts.length +
+                (postListScrollController.hasMore.value ? 1 : 0),
+            separatorBuilder: (context, index) => Divider(),
+            itemBuilder: (context, index) {
+              // 인덱스가 불러온 게시글 수보다 작은 경우 (불러온 게시글 출력)
+              if (index < postListScrollController.posts.length) {
+                Post post = postListScrollController.posts[index];
                 return ListTile(
                   contentPadding: EdgeInsets.fromLTRB(14, 0, 14, 5),
                   title: Text(
@@ -237,29 +259,49 @@ class PostListView extends StatelessWidget {
                             ),
                           ],
                           // 좋아요 개수
-                          SizedBox(
-                            width: 13,
-                          ),
-                          Icon(Icons.favorite_border,
-                              size: 20, color: Color(0xFF565656)),
-                          SizedBox(
-                            width: 3,
-                          ),
-                          Text(
-                            post.likeCount.toString(),
-                            style: TextStyle(
-                                fontSize: 14, color: Color(0xFF565656)),
-                          )
+                          if (post.commentCount > 0) ...[
+                            SizedBox(
+                              width: 13,
+                            ),
+                            Icon(Icons.favorite_border,
+                                size: 20, color: Color(0xFF565656)),
+                            SizedBox(
+                              width: 3,
+                            ),
+                            Text(
+                              post.likeCount.toString(),
+                              style: TextStyle(
+                                  fontSize: 14, color: Color(0xFF565656)),
+                            )
+                          ]
                         ],
                       ),
                     ],
                   ),
                 );
-              },
-            );
-          }
-        },
-      ),
+              } else if (postListScrollController.hasMore.value) {
+                // 더 불러올 데이터가 있는 경우
+                return Center(
+                    child: //CircularProgressIndicator(),
+                        LoadingAnimationWidget.hexagonDots(
+                            color: Colors.black, size: 40));
+              } else {
+                // 불러올 데이터가 없는 경우
+                return SizedBox(
+                  child: Column(
+                    children: [
+                      Text('게시글이 없습니다.'),
+                      IconButton(
+                          onPressed: postListScrollController.reload(),
+                          icon: Icon(Icons.refresh)),
+                    ],
+                  ),
+                );
+              }
+            },
+          );
+        }
+      }),
     );
   }
 }
