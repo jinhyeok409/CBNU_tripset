@@ -59,14 +59,8 @@ class BottomNavBar extends StatelessWidget {
                       ),
                       child: Icon(
                         icon,
+                        size: 32,
                         color: isSelected ? Colors.blue : Colors.white,
-                      ),
-                    ),
-                    Text(
-                      navTitle[index],
-                      style: TextStyle(
-                        color: isSelected ? Colors.blue : Colors.white,
-                        fontSize: 12,
                       ),
                     ),
                   ],
