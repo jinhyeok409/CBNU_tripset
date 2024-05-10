@@ -51,17 +51,14 @@ class PostListScrollController extends GetxController {
       var url = Uri.parse(postUri);
       var response = await http.get(
         url,
-        // headers: {"Content-Type": "application/json; charset=utf-8"},
       );
       if (response.statusCode == 200) {
-        // var jsonData = json.decode(response.body);
         var jsonData = json.decode(utf8.decode(response.bodyBytes));
         List<Post> fetchedPosts = (jsonData['posts'] as List)
             .map((postJson) => Post.fromJson(postJson))
             .toList();
         posts.addAll(fetchedPosts);
         nextLink.value = jsonData['nextLink'];
-        //hasMore.value = nextLink.isNotEmpty;
         hasMore.value = fetchedPosts.length == 10;
       } else {
         print('Failed to load data');
