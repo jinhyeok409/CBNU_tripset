@@ -126,6 +126,8 @@ class PostPage extends StatelessWidget {
     String content = _contentController.text;
     String category = _selectedCategory;
 
+    //토큰 값도 보내야함
+
     try {
       // 제목과 내용이 비어 있는지 확인
       if (title.isEmpty || content.isEmpty) {
@@ -147,21 +149,21 @@ class PostPage extends StatelessWidget {
             );
           },
         );
-        return; // 유효성 검사 실패로 함수 종료
-      }
-
-      var response = await http.post(
-        Uri.parse("test"),
-        headers: {},
-        body: {},
-      );
-
-      if (response.statusCode == 200) {
-        print('create post');
-        print(response.body);
-        Get.to();
+        // 유효성 검사 실패로 함수 종료
       } else {
-        print("fail");
+        var response = await http.post(
+          Uri.parse("test"),
+          headers: {},
+          body: {},
+        );
+
+        if (response.statusCode == 200) {
+          print('create post');
+          print(response.body);
+          Get.to();
+        } else {
+          print("fail");
+        }
       }
     } catch (e) {
       print(e.toString());
