@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:front/screen/post_list.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 void main() {
   runApp(MyApp());
@@ -23,8 +24,20 @@ class PostPage extends StatelessWidget {
   final List<String> _selectedCategories = []; // 선택된 카테고리 목록
   final String _selectedCategory = '0'; // Default category
 
+  final storage = FlutterSecureStorage();
+
+  // readToken 메서드 build 메서드 밖으로 이동
+  Future<void> readToken() async {
+    String? token = await storage.read(key: 'accessToken');
+    // 여기서 토큰을 사용할 수 있음
+    print('토큰: $token');
+  }
+
   @override
   Widget build(BuildContext context) {
+    // readToken 메서드를 여기서 호출하거나 필요한 곳에서 호출
+    readToken();
+
     return GestureDetector(
       onTap: () {
         // 다른 곳을 터치했을 때 포커스를 제거하여 키보드가 사라지도록 함
@@ -92,7 +105,7 @@ class PostPage extends StatelessWidget {
                   Expanded(
                     child: RadioListTile(
                       title: Text('자유게시판'),
-                      value: '0',
+                      value: 'FREE',
                       groupValue: _selectedCategory,
                       onChanged: (value) {
                         // setState를 사용하지 않아도 되므로 이 부분은 삭제할 수 있습니다.
@@ -102,8 +115,8 @@ class PostPage extends StatelessWidget {
                   ),
                   Expanded(
                     child: RadioListTile(
-                      title: Text('여행게시판'),
-                      value: '1',
+                      title: Text('계획게시판'),
+                      value: 'PLAN',
                       groupValue: _selectedCategory,
                       onChanged: (value) {
                         // setState를 사용하지 않아도 되므로 이 부분은 삭제할 수 있습니다.
@@ -126,7 +139,8 @@ class PostPage extends StatelessWidget {
     String content = _contentController.text;
     String category = _selectedCategory;
 
-    //토큰 값도 보내야함
+    // 토큰 값 읽어오기
+    String? token = await storage.read(key: 'accessToken');
 
     try {
       // 제목과 내용이 비어 있는지 확인
@@ -150,20 +164,31 @@ class PostPage extends StatelessWidget {
           },
         );
         // 유효성 검사 실패로 함수 종료
-      } else {
-        var response = await http.post(
-          Uri.parse("test"),
-          headers: {},
-          body: {},
-        );
+        return;
+      }
 
-        if (response.statusCode == 200) {
-          print('create post');
-          print(response.body);
-          Get.to();
-        } else {
-          print("fail");
-        }
+      // HTTP 요청 헤더 설정
+      Map<String, String> headers = {
+        'Authorization': 'Bearer $token', // 토큰 값 추가
+        'Content-Type': 'application/x-www-form-urlencoded', // 예시
+      };
+
+      var response = await http.post(
+        Uri.parse("test"),
+        headers: headers,
+        body: {
+          'title': title,
+          'content': content,
+          'catagory': category,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        print('create post');
+        print(response.body);
+        Get.to();
+      } else {
+        print("fail");
       }
     } catch (e) {
       print(e.toString());
