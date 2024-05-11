@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:front/screen/post_list.dart';
+import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 
 void main() {
@@ -16,17 +17,11 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class PostPage extends StatefulWidget {
-  @override
-  _PostPageState createState() => _PostPageState();
-}
-
-class _PostPageState extends State<PostPage> {
-  TextEditingController _titleController = TextEditingController();
-  TextEditingController _contentController = TextEditingController();
-  List<String> _selectedCategories = []; // 선택된 카테고리 목록
-  String _selectedCategory = '0'; // Default category
-  double _contentHeight = 150.0; // 기본 높이
+class PostPage extends StatelessWidget {
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _contentController = TextEditingController();
+  final List<String> _selectedCategories = []; // 선택된 카테고리 목록
+  final String _selectedCategory = '0'; // Default category
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +38,7 @@ class _PostPageState extends State<PostPage> {
             IconButton(
               icon: Icon(Icons.send),
               onPressed: () {
-                _handleSubmit(); // Submit 버튼을 눌렀을 때 호출되는 메서드
+                _handleSubmit(context); // Submit 버튼을 눌렀을 때 호출되는 메서드
               },
             ),
           ],
@@ -100,9 +95,7 @@ class _PostPageState extends State<PostPage> {
                       value: '0',
                       groupValue: _selectedCategory,
                       onChanged: (value) {
-                        setState(() {
-                          _selectedCategory = value.toString();
-                        });
+                        // setState를 사용하지 않아도 되므로 이 부분은 삭제할 수 있습니다.
                       },
                       activeColor: Colors.blue.shade200,
                     ),
@@ -113,9 +106,7 @@ class _PostPageState extends State<PostPage> {
                       value: '1',
                       groupValue: _selectedCategory,
                       onChanged: (value) {
-                        setState(() {
-                          _selectedCategory = value.toString();
-                        });
+                        // setState를 사용하지 않아도 되므로 이 부분은 삭제할 수 있습니다.
                       },
                       activeColor: Colors.blue.shade200,
                     ),
@@ -130,35 +121,50 @@ class _PostPageState extends State<PostPage> {
     );
   }
 
-  void _handleSubmit() {
-    // 제목과 내용 가져오기
+  void _handleSubmit(BuildContext context) async {
     String title = _titleController.text;
     String content = _contentController.text;
     String category = _selectedCategory;
 
-    // 제목과 내용이 비어 있는지 확인
-    if (title.isEmpty || content.isEmpty) {
-      // 제목 또는 내용이 비어 있으면 사용자에게 알림
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('경고'),
-            content: Text('제목과 내용을 입력해주세요.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context); // 다이얼로그 닫기
-                },
-                child: Text('확인'),
-              ),
-            ],
-          );
-        },
-      );
-      return; // 유효성 검사 실패로 함수 종료
-    }
+    try {
+      // 제목과 내용이 비어 있는지 확인
+      if (title.isEmpty || content.isEmpty) {
+        // 제목 또는 내용이 비어 있으면 사용자에게 알림
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text('경고'),
+              content: Text('제목과 내용을 입력해주세요.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context); // 다이얼로그 닫기
+                  },
+                  child: Text('확인'),
+                ),
+              ],
+            );
+          },
+        );
+        return; // 유효성 검사 실패로 함수 종료
+      }
 
-    // 데이터 처리
+      var response = await http.post(
+        Uri.parse("test"),
+        headers: {},
+        body: {},
+      );
+
+      if (response.statusCode == 200) {
+        print('create post');
+        print(response.body);
+        Get.to();
+      } else {
+        print("fail");
+      }
+    } catch (e) {
+      print(e.toString());
+    }
   }
 }
