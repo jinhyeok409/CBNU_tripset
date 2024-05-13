@@ -186,7 +186,7 @@ class PostPage extends StatelessWidget {
       if (response.statusCode == 200) {
         print('create post');
         print(response.body);
-        Get.to();
+        //Get.to();
       } else {
         print("fail");
       }

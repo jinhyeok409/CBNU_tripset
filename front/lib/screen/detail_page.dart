@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:front/model/post.dart'; // 게시물 모델 임포트
 
+void main() async {
+  await dotenv.load(fileName: ".env");
+  runApp(PostDetailPage());
+}
+
 // 게시글 상세 페이지
 class PostDetailPage extends StatelessWidget {
-  final Post post; // 클릭한 게시물 객체
+  //final Post post; // 클릭한 게시물 객체
 
   // 생성자
-  const PostDetailPage({Key? key, required this.post}) : super(key: key);
+  //const PostDetailPage({Key? key, required this.post}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
