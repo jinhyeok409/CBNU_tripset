@@ -189,12 +189,12 @@ class _PostPageState extends State<PostPage> {
         if (response.statusCode == 200) {
           print('create post');
           print(response.body);
-          //Get.to();
+          //Get.to(자기글);
         } else {
           print(response.body);
           print(response.headers);
-          print("fail");
           print(response.statusCode);
+          print("fail");
         }
       }
     } catch (e) {
