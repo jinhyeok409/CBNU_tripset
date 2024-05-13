@@ -3,6 +3,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:front/model/post.dart'; // 게시물 모델 임포트
 
+// 할 일 : postlist 에서 id값 넘겨주면 여기서 그거 바탕으로 서버에서 받아온 후
+// 화면에 뿌리기 + 토큰 디코드해서 서버에서 받아온 저자 값과 일치하면 수정 삭제
 void main() async {
   await dotenv.load(fileName: ".env");
   runApp(PostDetailPage());
