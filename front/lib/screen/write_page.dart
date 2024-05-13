@@ -18,7 +18,7 @@ class PostPage extends StatefulWidget {
 class _PostPageState extends State<PostPage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
-  String _selectedCategory = ''; // Default category
+  String _selectedCategory = 'FREE'; // Default category
 
   final storage = FlutterSecureStorage();
 
@@ -36,7 +36,8 @@ class _PostPageState extends State<PostPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
           title: Text('글쓰기'),
@@ -52,7 +53,8 @@ class _PostPageState extends State<PostPage> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
-              // GetX의 네비게이션을 사용하여 페이지 이동
+              // Navigate to the PostList screen
+              Get.to(PostList());
             },
           ),
         ),
@@ -77,22 +79,6 @@ class _PostPageState extends State<PostPage> {
                       borderSide: BorderSide(color: Colors.blue.shade200),
                     ),
                   ),
-                ),
-                SizedBox(height: 16.0),
-                TextField(
-                  controller: _contentController,
-                  style: TextStyle(
-                    fontSize: 18,
-                  ),
-                  decoration: InputDecoration(
-                    labelText: '내용을 입력하세요.',
-                    labelStyle: TextStyle(
-                      fontWeight: FontWeight.w300,
-                      color: Colors.blue.shade200,
-                    ),
-                    border: InputBorder.none,
-                  ),
-                  maxLines: null, // 텍스트 필드의 높이를 사용자가 입력한 텍스트에 따라 자동으로 조정
                 ),
                 SizedBox(height: 16.0),
                 Row(
@@ -126,6 +112,22 @@ class _PostPageState extends State<PostPage> {
                       ),
                     ),
                   ],
+                ),
+                SizedBox(height: 16.0),
+                TextField(
+                  controller: _contentController,
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),
+                  decoration: InputDecoration(
+                    labelText: '내용을 입력하세요.',
+                    labelStyle: TextStyle(
+                      fontWeight: FontWeight.w300,
+                      color: Colors.blue.shade200,
+                    ),
+                    border: InputBorder.none,
+                  ),
+                  maxLines: null, // 텍스트 필드의 높이를 사용자가 입력한 텍스트에 따라 자동으로 조정
                 ),
                 SizedBox(height: 16.0),
               ],
