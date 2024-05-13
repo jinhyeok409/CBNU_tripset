@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:front/model/post.dart';
 import 'package:get/get.dart';
@@ -7,6 +6,7 @@ import '../bottom_navigation_bar.dart';
 import '../controller/infinite_scroll_controller.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
+// 디버그용
 void main() async {
   await dotenv.load(fileName: ".env");
   runApp(PostList());
@@ -41,7 +41,6 @@ class PostList extends StatelessWidget {
                                     'ALL';
                                 postListScrollController.nextLink.value = '';
                                 postListScrollController.reload();
-                                // 전체게시판으로 이동 추후 구현
                               },
                               child: Text(
                                 '전체',
@@ -66,7 +65,6 @@ class PostList extends StatelessWidget {
                                     'FREE';
                                 postListScrollController.nextLink.value = '';
                                 postListScrollController.reload();
-                                // 자유게시판으로 이동 추후 구현
                               },
                               child: Text(
                                 '자유',
@@ -90,7 +88,6 @@ class PostList extends StatelessWidget {
                                       .currentCategory('PLAN');
                                   postListScrollController.nextLink.value = '';
                                   postListScrollController.reload();
-                                  // 계획게시판으로 이동 추후 구현
                                 },
                                 child: Text(
                                   '계획',

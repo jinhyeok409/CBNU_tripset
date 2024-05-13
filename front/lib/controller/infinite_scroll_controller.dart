@@ -36,12 +36,9 @@ class PostListScrollController extends GetxController {
       String postUri;
       // json 요청 보낸 적이 있음(게시글 더 불러오기)
       if (nextLink.value.isNotEmpty) {
-        print('next page');
         postUri = nextLink.value;
       } else {
         // json 요청이 처음임(게시글 목록 로드)
-        print('first json request');
-        await Future.delayed(Duration(seconds: 2));
         postUri = dotenv.env['POST_URI']!;
         if (category != null && category != 'ALL') {
           postUri = '$postUri?category=$category';
@@ -80,7 +77,5 @@ class PostListScrollController extends GetxController {
     print(currentCategory);
     isLoading.value = false;
     await _getData(category: currentCategory.value);
-
-    isLoading.value = false;
   }
 }

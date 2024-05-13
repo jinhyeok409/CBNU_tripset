@@ -1,21 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:front/model/post.dart'; // 게시물 모델 임포트
 
 // 할 일 : postlist 에서 id값 넘겨주면 여기서 그거 바탕으로 서버에서 받아온 후
 // 화면에 뿌리기 + 토큰 디코드해서 서버에서 받아온 저자 값과 일치하면 수정 삭제
-void main() async {
-  await dotenv.load(fileName: ".env");
-  runApp(PostDetailPage());
-}
 
 // 게시글 상세 페이지
 class PostDetailPage extends StatelessWidget {
   final Post post; // 클릭한 게시물 객체
 
   // 생성자
-  const PostDetailPage({Key? key, required this.post}) : super(key: key);
+  const PostDetailPage({super.key, required this.post});
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +66,7 @@ class EditPostPage extends StatelessWidget {
   final Post post; // 수정할 게시물 객체
 
   // 생성자
-  const EditPostPage({Key? key, required this.post}) : super(key: key);
+  const EditPostPage({super.key, required this.post});
 
   @override
   Widget build(BuildContext context) {

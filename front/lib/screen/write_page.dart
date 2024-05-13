@@ -11,11 +11,13 @@ void main() async {
 }
 
 class PostPage extends StatefulWidget {
+  const PostPage({super.key});
+
   @override
-  _PostPageState createState() => _PostPageState();
+  PostPageState createState() => PostPageState();
 }
 
-class _PostPageState extends State<PostPage> {
+class PostPageState extends State<PostPage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
   String _selectedCategory = 'FREE'; // Default category
