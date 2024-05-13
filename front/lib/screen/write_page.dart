@@ -91,10 +91,10 @@ class _PostPageState extends State<PostPage> {
                         value: 'FREE',
                         groupValue: _selectedCategory,
                         onChanged: (value) {
-                          // setState(() {
-                          //   _selectedCategory = value!;
-                          //   print(_selectedCategory);
-                          // });
+                          setState(() {
+                            _selectedCategory = value!;
+                            print(_selectedCategory);
+                          });
                         },
                         activeColor: Colors.blue.shade200,
                       ),
@@ -105,10 +105,10 @@ class _PostPageState extends State<PostPage> {
                         value: 'PLAN',
                         groupValue: _selectedCategory,
                         onChanged: (value) {
-                          // setState(() {
-                          //   _selectedCategory = value!;
-                          //   print(_selectedCategory);
-                          // });
+                          setState(() {
+                            _selectedCategory = value!;
+                            print(_selectedCategory);
+                          });
                         },
                         activeColor: Colors.blue.shade200,
                       ),
@@ -147,6 +147,9 @@ class _PostPageState extends State<PostPage> {
 
     // 토큰 값 읽어오기
     String? token = await storage.read(key: 'accessToken');
+    await dotenv.load(fileName: ".env");
+
+    String createUri = dotenv.env['CREATE_URI']!;
 
     try {
       // 제목과 내용이 비어 있는지 확인
@@ -167,17 +170,14 @@ class _PostPageState extends State<PostPage> {
             ],
           ),
         );
-        // 유효성 검사 실패로 함수 종료
-        return;
       } else {
         // HTTP 요청 헤더 설정
         Map<String, String> headers = {
-          'Authorization': 'Bearer $token', // 토큰 값 추가
-          'Content-Type': 'application/x-www-form-urlencoded', // 예시
+          'Authorization': '$token', // 토큰 값 추가
         };
 
         var response = await http.post(
-          Uri.parse("test"),
+          Uri.parse(createUri),
           headers: headers,
           body: {
             'title': title,
@@ -191,7 +191,10 @@ class _PostPageState extends State<PostPage> {
           print(response.body);
           //Get.to();
         } else {
+          print(response.body);
+          print(response.headers);
           print("fail");
+          print(response.statusCode);
         }
       }
     } catch (e) {
