@@ -1,32 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:front/screen/post_list.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-void main() {
-  runApp(MyApp());
+void main() async {
+  await dotenv.load(fileName: ".env");
+  runApp(PostPage());
 }
 
-class MyApp extends StatelessWidget {
+class PostPage extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: PostPage(),
-    );
-  }
+  _PostPageState createState() => _PostPageState();
 }
 
-class PostPage extends StatelessWidget {
+class _PostPageState extends State<PostPage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
-  final List<String> _selectedCategories = []; // 선택된 카테고리 목록
-  final String _selectedCategory = '0'; // Default category
+  String _selectedCategory = ''; // Default category
 
   final storage = FlutterSecureStorage();
 
-  // readToken 메서드 build 메서드 밖으로 이동
+  @override
+  void initState() {
+    super.initState();
+    readToken(); // 토큰 읽어오기
+  }
+
   Future<void> readToken() async {
     String? token = await storage.read(key: 'accessToken');
     // 여기서 토큰을 사용할 수 있음
@@ -35,15 +36,8 @@ class PostPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // readToken 메서드를 여기서 호출하거나 필요한 곳에서 호출
-    readToken();
-
-    return GestureDetector(
-      onTap: () {
-        // 다른 곳을 터치했을 때 포커스를 제거하여 키보드가 사라지도록 함
-        FocusScope.of(context).unfocus();
-      },
-      child: Scaffold(
+    return MaterialApp(
+      home: Scaffold(
         appBar: AppBar(
           title: Text('글쓰기'),
           centerTitle: true,
@@ -62,72 +56,80 @@ class PostPage extends StatelessWidget {
             },
           ),
         ),
-        body: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextField(
-                controller: _titleController,
-                decoration: InputDecoration(
-                  labelText: '제목',
-                  labelStyle: TextStyle(
-                    fontWeight: FontWeight.w300,
-                    color: Colors.blue.shade200,
-                  ),
-                  border: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue.shade200),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue.shade200),
-                  ),
-                ),
-              ),
-              SizedBox(height: 16.0),
-              TextField(
-                controller: _contentController,
-                style: TextStyle(
-                  fontSize: 18,
-                ),
-                decoration: InputDecoration(
-                  labelText: '내용을 입력하세요.',
-                  labelStyle: TextStyle(
-                    fontWeight: FontWeight.w300,
-                    color: Colors.blue.shade200,
-                  ),
-                  border: InputBorder.none,
-                ),
-                maxLines: null, // 텍스트 필드의 높이를 사용자가 입력한 텍스트에 따라 자동으로 조정
-              ),
-              SizedBox(height: 16.0),
-              Row(
-                children: [
-                  Expanded(
-                    child: RadioListTile(
-                      title: Text('자유게시판'),
-                      value: 'FREE',
-                      groupValue: _selectedCategory,
-                      onChanged: (value) {
-                        // setState를 사용하지 않아도 되므로 이 부분은 삭제할 수 있습니다.
-                      },
-                      activeColor: Colors.blue.shade200,
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextField(
+                  controller: _titleController,
+                  decoration: InputDecoration(
+                    labelText: '제목',
+                    labelStyle: TextStyle(
+                      fontWeight: FontWeight.w300,
+                      color: Colors.blue.shade200,
+                    ),
+                    border: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blue.shade200),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blue.shade200),
                     ),
                   ),
-                  Expanded(
-                    child: RadioListTile(
-                      title: Text('계획게시판'),
-                      value: 'PLAN',
-                      groupValue: _selectedCategory,
-                      onChanged: (value) {
-                        // setState를 사용하지 않아도 되므로 이 부분은 삭제할 수 있습니다.
-                      },
-                      activeColor: Colors.blue.shade200,
-                    ),
+                ),
+                SizedBox(height: 16.0),
+                TextField(
+                  controller: _contentController,
+                  style: TextStyle(
+                    fontSize: 18,
                   ),
-                ],
-              ),
-              SizedBox(height: 16.0),
-            ],
+                  decoration: InputDecoration(
+                    labelText: '내용을 입력하세요.',
+                    labelStyle: TextStyle(
+                      fontWeight: FontWeight.w300,
+                      color: Colors.blue.shade200,
+                    ),
+                    border: InputBorder.none,
+                  ),
+                  maxLines: null, // 텍스트 필드의 높이를 사용자가 입력한 텍스트에 따라 자동으로 조정
+                ),
+                SizedBox(height: 16.0),
+                Row(
+                  children: [
+                    Expanded(
+                      child: RadioListTile(
+                        title: Text('자유게시판'),
+                        value: 'FREE',
+                        groupValue: _selectedCategory,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedCategory = value!;
+                            print(_selectedCategory);
+                          });
+                        },
+                        activeColor: Colors.blue.shade200,
+                      ),
+                    ),
+                    Expanded(
+                      child: RadioListTile(
+                        title: Text('계획게시판'),
+                        value: 'PLAN',
+                        groupValue: _selectedCategory,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedCategory = value!;
+                            print(_selectedCategory);
+                          });
+                        },
+                        activeColor: Colors.blue.shade200,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16.0),
+              ],
+            ),
           ),
         ),
       ),
