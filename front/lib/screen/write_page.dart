@@ -54,7 +54,9 @@ class _PostPageState extends State<PostPage> {
             icon: Icon(Icons.arrow_back),
             onPressed: () {
               // Navigate to the PostList screen
-              Get.to(PostList());
+              print('back to Postlist');
+              //Get.to(PostList());
+              Get.back();
             },
           ),
         ),
@@ -89,10 +91,10 @@ class _PostPageState extends State<PostPage> {
                         value: 'FREE',
                         groupValue: _selectedCategory,
                         onChanged: (value) {
-                          setState(() {
-                            _selectedCategory = value!;
-                            print(_selectedCategory);
-                          });
+                          // setState(() {
+                          //   _selectedCategory = value!;
+                          //   print(_selectedCategory);
+                          // });
                         },
                         activeColor: Colors.blue.shade200,
                       ),
@@ -103,10 +105,10 @@ class _PostPageState extends State<PostPage> {
                         value: 'PLAN',
                         groupValue: _selectedCategory,
                         onChanged: (value) {
-                          setState(() {
-                            _selectedCategory = value!;
-                            print(_selectedCategory);
-                          });
+                          // setState(() {
+                          //   _selectedCategory = value!;
+                          //   print(_selectedCategory);
+                          // });
                         },
                         activeColor: Colors.blue.shade200,
                       ),
@@ -150,49 +152,47 @@ class _PostPageState extends State<PostPage> {
       // 제목과 내용이 비어 있는지 확인
       if (title.isEmpty || content.isEmpty) {
         // 제목 또는 내용이 비어 있으면 사용자에게 알림
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: Text('경고'),
-              content: Text('제목과 내용을 입력해주세요.'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context); // 다이얼로그 닫기
-                  },
-                  child: Text('확인'),
-                ),
-              ],
-            );
-          },
+        Get.dialog(
+          AlertDialog(
+            title: Text('경고'),
+            content: Text('제목과 내용을 입력해주세요.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  // Get 패키지의 dialog 메서드를 사용하여 다이얼로그를 닫습니다.
+                  Get.back();
+                },
+                child: Text('확인'),
+              ),
+            ],
+          ),
         );
         // 유효성 검사 실패로 함수 종료
         return;
-      }
-
-      // HTTP 요청 헤더 설정
-      Map<String, String> headers = {
-        'Authorization': 'Bearer $token', // 토큰 값 추가
-        'Content-Type': 'application/x-www-form-urlencoded', // 예시
-      };
-
-      var response = await http.post(
-        Uri.parse("test"),
-        headers: headers,
-        body: {
-          'title': title,
-          'content': content,
-          'catagory': category,
-        },
-      );
-
-      if (response.statusCode == 200) {
-        print('create post');
-        print(response.body);
-        //Get.to();
       } else {
-        print("fail");
+        // HTTP 요청 헤더 설정
+        Map<String, String> headers = {
+          'Authorization': 'Bearer $token', // 토큰 값 추가
+          'Content-Type': 'application/x-www-form-urlencoded', // 예시
+        };
+
+        var response = await http.post(
+          Uri.parse("test"),
+          headers: headers,
+          body: {
+            'title': title,
+            'content': content,
+            'category': category,
+          },
+        );
+
+        if (response.statusCode == 200) {
+          print('create post');
+          print(response.body);
+          //Get.to();
+        } else {
+          print("fail");
+        }
       }
     } catch (e) {
       print(e.toString());
