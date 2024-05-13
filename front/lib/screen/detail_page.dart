@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:front/model/post.dart'; // 게시물 모델 임포트
+
+void main() async {
+  await dotenv.load(fileName: ".env");
+  runApp(PostDetailPage());
+}
 
 // 게시글 상세 페이지
 class PostDetailPage extends StatelessWidget {
