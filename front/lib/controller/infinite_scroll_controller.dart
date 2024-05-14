@@ -39,7 +39,9 @@ class PostListScrollController extends GetxController {
         postUri = nextLink.value;
       } else {
         // json 요청이 처음임(게시글 목록 로드)
-        postUri = dotenv.env['POST_URI']!;
+        String serverUri = dotenv.env['SERVER_URI']!;
+        String postEndpoint = dotenv.env['POST_ENDPOINT']!;
+        postUri = '$serverUri$postEndpoint';
         if (category != null && category != 'ALL') {
           postUri = '$postUri?category=$category';
         }

@@ -151,7 +151,9 @@ class PostPageState extends State<PostPage> {
     String? token = await storage.read(key: 'accessToken');
     await dotenv.load(fileName: ".env");
 
-    String createUri = dotenv.env['CREATE_URI']!;
+    String serverUri = dotenv.env['SERVER_URI']!;
+    String postCreateEndpoint = dotenv.env['POST_CREATE_ENDPOINT']!;
+    String postCreateUri = '$serverUri$postCreateEndpoint';
 
     try {
       // 제목과 내용이 비어 있는지 확인
@@ -179,7 +181,7 @@ class PostPageState extends State<PostPage> {
         };
 
         var response = await http.post(
-          Uri.parse(createUri),
+          Uri.parse(postCreateUri),
           headers: headers,
           body: {
             'title': title,

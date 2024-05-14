@@ -19,7 +19,9 @@ class RegisterState extends State<Register> {
   Widget build(BuildContext context) {
     Future register(String username, String password) async {
       try {
-        String registerUri = dotenv.env['REGISTER_URI']!;
+        String serverUri = dotenv.env['SERVER_URI']!;
+        String registerEndpoint = dotenv.env['REGISTER_ENDPOINT']!;
+        String registerUri = '$serverUri$registerEndpoint';
 
         var response = await http.post(
           Uri.parse(registerUri),

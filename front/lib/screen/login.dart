@@ -26,7 +26,9 @@ class LoginState extends State<Login> {
     final storage = FlutterSecureStorage();
     Future login(String username, String password) async {
       try {
-        String loginUri = dotenv.env['LOGIN_URI']!;
+        String serverUri = dotenv.env['SERVER_URI']!;
+        String loginEndpoint = dotenv.env['LOGIN_ENDPOINT']!;
+        String loginUri = '$serverUri$loginEndpoint';
 
         var response = await http.post(
           Uri.parse(loginUri),
