@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:front/model/post.dart';
 import 'package:jwt_decoder/jwt_decoder.dart'; // 게시물 모델 임포트
 
+// 업데이트랑 삭제 부분 구현 하고 + 아이디값 사용법 배우기
 void main() async {
   await dotenv.load(fileName: ".env");
   runApp(PostDetailPage());
