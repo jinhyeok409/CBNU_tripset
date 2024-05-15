@@ -29,6 +29,7 @@ class PostDetailPageState extends State<PostDetailPage> {
   String content = "";
   String username = "";
   String tokenUsername = "";
+  List<Map<String, dynamic>> comments = [];
 
   bool isAuthorVerified(String username, String tokenUsername) {
     // username과 tokenUsername을 비교하여 일치 여부를 확인하고 true 또는 false 반환
@@ -45,31 +46,26 @@ class PostDetailPageState extends State<PostDetailPage> {
   Future<void> decodeToken() async {
     String? token = await storage.read(key: 'accessToken');
     Map<String, dynamic> decodedToken = JwtDecoder.decode(token!);
-    print('토큰: $token');
-    print(decodedToken);
     tokenUsername = decodedToken['username'];
-    print("토큰 유저네임");
-    print(tokenUsername);
   }
 
   Future<void> fetchPostData() async {
     String postId = Get.arguments;
     String serverUri = dotenv.env['SERVER_URI']!;
     String postEndpoint = dotenv.env['POST_ENDPOINT']!;
-    print('$serverUri$postEndpoint/$postId');
     final response =
         await http.get(Uri.parse('$serverUri$postEndpoint/$postId'));
     if (response.statusCode == 200) {
       // 서버에서 데이터를 성공적으로 받았을 때
       print("success");
-      final Map<String, dynamic> data = json.decode(response.body);
+      final Map<String, dynamic> data =
+          json.decode(utf8.decode(response.bodyBytes));
       setState(() {
         title = data['title'];
         content = data['content'];
         username = data['author']['username'];
+        comments = List<Map<String, dynamic>>.from(data['commentDTOList']);
       });
-      print("유저네임");
-      print(username);
     } else {
       print("fail");
       // 서버로부터 데이터를 받지 못했을 때
@@ -89,8 +85,6 @@ class PostDetailPageState extends State<PostDetailPage> {
             // 왼쪽에 뒤로가기 아이콘 추가
             icon: Icon(Icons.arrow_back),
             onPressed: () {
-              // 뒤로가기 버튼이 눌렸을 때의 동작 설정
-              // 예시: Get.back()을 호출하여 이전 화면으로 이동
               Get.back();
             },
           ),
@@ -101,7 +95,6 @@ class PostDetailPageState extends State<PostDetailPage> {
                 onPressed: () {
                   // 게시물 수정 페이지로 이동
                   Get.to(() => EditPostPage(title: title, content: content));
-                  //Get.to(() => EditPostPage(post: post));
                 },
               ),
             if (isAuthorVerified(username, tokenUsername)) // 저자 확인 함수 호출
@@ -131,6 +124,30 @@ class PostDetailPageState extends State<PostDetailPage> {
               Text(
                 content,
                 style: TextStyle(fontSize: 18),
+              ),
+              Divider(),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: comments.length,
+                  itemBuilder: (_, index) {
+                    return ListTile(
+                      title: Text(
+                        comments[index]['author']['username'],
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black54),
+                      ),
+                      subtitle: Text(
+                        comments[index]['comment'],
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black87),
+                      ),
+                    );
+                  },
+                ),
               ),
             ],
           ),
