@@ -47,9 +47,8 @@ class PostListScrollController extends GetxController {
         }
       }
 
-      var url = Uri.parse(postUri);
       var response = await http.get(
-        url,
+        Uri.parse(postUri),
       );
       if (response.statusCode == 200) {
         var jsonData = json.decode(utf8.decode(response.bodyBytes));

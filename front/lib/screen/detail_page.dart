@@ -17,11 +17,13 @@ void main() async {
 }
 
 class PostDetailPage extends StatefulWidget {
+  const PostDetailPage({super.key});
+
   @override
-  _PostDetailPageState createState() => _PostDetailPageState();
+  PostDetailPageState createState() => PostDetailPageState();
 }
 
-class _PostDetailPageState extends State<PostDetailPage> {
+class PostDetailPageState extends State<PostDetailPage> {
   final storage = FlutterSecureStorage();
   String title = "";
   String content = "";
@@ -50,11 +52,13 @@ class _PostDetailPageState extends State<PostDetailPage> {
     print(tokenUsername);
   }
 
-  // 생성자
-  //const PostDetailPage({super.key, required this.post});
   Future<void> fetchPostData() async {
-    final response = await http.get(Uri.parse('http://13.124.239.15/post/202'));
-
+    String postId = Get.arguments;
+    String serverUri = dotenv.env['SERVER_URI']!;
+    String postEndpoint = dotenv.env['POST_ENDPOINT']!;
+    print('$serverUri$postEndpoint/$postId');
+    final response =
+        await http.get(Uri.parse('$serverUri$postEndpoint/$postId'));
     if (response.statusCode == 200) {
       // 서버에서 데이터를 성공적으로 받았을 때
       print("success");
@@ -75,7 +79,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'DetailPage',
       home: Scaffold(
@@ -87,6 +91,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
             onPressed: () {
               // 뒤로가기 버튼이 눌렸을 때의 동작 설정
               // 예시: Get.back()을 호출하여 이전 화면으로 이동
+              Get.back();
             },
           ),
           actions: [
@@ -139,7 +144,7 @@ class EditPostPage extends StatelessWidget {
   final String title;
   final String content;
 
-  EditPostPage({required this.title, required this.content});
+  EditPostPage({super.key, required this.title, required this.content});
 
   @override
   Widget build(BuildContext context) {

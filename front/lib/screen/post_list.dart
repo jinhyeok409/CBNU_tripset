@@ -228,6 +228,7 @@ class PostListView extends StatelessWidget {
                           post.content,
                           style:
                               TextStyle(color: Color(0xFF565656), fontSize: 15),
+                          maxLines: 2,
                         ),
                       ),
                       SizedBox(
@@ -277,7 +278,8 @@ class PostListView extends StatelessWidget {
                       ),
                     ],
                   ),
-                  //onTap: () => Get.to(PostDetailPage(), arguments: post.id),
+                  onTap: () =>
+                      Get.to(PostDetailPage(), arguments: post.id.toString()),
                 );
               } else if (postListScrollController.hasMore.value) {
                 // 더 불러올 데이터가 있는 경우
