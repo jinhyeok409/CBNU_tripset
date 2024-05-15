@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:front/screen/login.dart';
+import 'package:http/http.dart' as http;
 import 'package:front/screen/detail_page.dart';
 import 'package:get/get.dart';
 import 'package:front/model/post.dart'; // 게시물 모델 임포트
@@ -9,11 +13,43 @@ void main() async {
   runApp(PostDetailPage());
 }
 
-class PostDetailPage extends StatelessWidget {
-  //final Post post; // 클릭한 게시물 객체
+class PostDetailPage extends StatefulWidget {
+  @override
+  _PostDetailPageState createState() => _PostDetailPageState();
+}
+
+class _PostDetailPageState extends State<PostDetailPage> {
+  String title = "";
+  String content = "";
+  String username = "";
+
+  @override
+  void initState() {
+    super.initState();
+    fetchPostData(); // initState에서 데이터 가져오기
+  }
 
   // 생성자
   //const PostDetailPage({super.key, required this.post});
+  Future<void> fetchPostData() async {
+    final response = await http.get(Uri.parse('http://13.124.239.15/post/201'));
+
+    if (response.statusCode == 200) {
+      // 서버에서 데이터를 성공적으로 받았을 때
+      print("success");
+      final Map<String, dynamic> data = json.decode(response.body);
+      setState(() {
+        title = data['title'];
+        content = data['content'];
+        username = data['author']['username'];
+      });
+    } else {
+      print("fail");
+      // 서버로부터 데이터를 받지 못했을 때
+      throw Exception('Failed to load post data');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -57,8 +93,7 @@ class PostDetailPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "제목입니다",
-                //post.title,
+                title,
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -66,7 +101,7 @@ class PostDetailPage extends StatelessWidget {
               ),
               SizedBox(height: 16),
               Text(
-                "내용입니다",
+                content,
                 //post.content,
                 style: TextStyle(fontSize: 18),
               ),
