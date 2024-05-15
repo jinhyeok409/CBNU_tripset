@@ -93,7 +93,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 icon: Icon(Icons.edit),
                 onPressed: () {
                   // 게시물 수정 페이지로 이동
-                  Get.to(() => EditPostPage());
+                  Get.to(() => EditPostPage(title: title, content: content));
                   //Get.to(() => EditPostPage(post: post));
                 },
               ),
@@ -134,6 +134,11 @@ class _PostDetailPageState extends State<PostDetailPage> {
 }
 
 class EditPostPage extends StatelessWidget {
+  final String title;
+  final String content;
+
+  EditPostPage({required this.title, required this.content});
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -154,7 +159,7 @@ class EditPostPage extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.send),
               onPressed: () {
-                Get.to(() => EditPostPage());
+                //Get.to(() => EditPostPage());
               },
             ),
           ],
@@ -165,7 +170,7 @@ class EditPostPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
-                initialValue: "수정할 타이틀",
+                initialValue: title,
                 decoration: InputDecoration(
                   labelText: '제목',
                   labelStyle: TextStyle(
@@ -182,7 +187,7 @@ class EditPostPage extends StatelessWidget {
               ),
               SizedBox(height: 16),
               TextFormField(
-                initialValue: "수정할 본문",
+                initialValue: content,
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
                 decoration: InputDecoration(
