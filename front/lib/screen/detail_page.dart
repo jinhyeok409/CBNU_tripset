@@ -173,6 +173,7 @@ class EditPostPage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text('게시물 수정'),
+          centerTitle: true,
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {

@@ -36,6 +36,7 @@ class RegisterState extends State<Register> {
           print(response.body);
           Get.to(Login());
         } else {
+          print(response.statusCode);
           print('fail');
         }
       } catch (e) {

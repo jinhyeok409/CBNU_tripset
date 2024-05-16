@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:front/screen/detail_page.dart';
 import 'package:front/screen/post_list.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
@@ -193,7 +196,9 @@ class PostPageState extends State<PostPage> {
         if (response.statusCode == 200) {
           print('create post');
           print(response.body);
-          //Get.to(자기글);
+          Map<String, dynamic> responseData = json.decode(response.body);
+          int id = responseData['id'];
+          Get.to(PostDetailPage(), arguments: id.toString());
         } else {
           print(response.body);
           print(response.headers);
