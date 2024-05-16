@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:front/screen/calendar_page.dart';
 import 'package:get/get.dart';
 import 'screen/home.dart';
 import 'screen/post_list.dart';
@@ -14,8 +15,7 @@ class BottomNavController extends GetxController {
         Get.to(Home());
         break;
       case 1:
-        // 계획 추후 구현
-        // Get.to(Plan());
+        Get.to(CalendarWidget());
         break;
       case 2:
         Get.to(PostList());
