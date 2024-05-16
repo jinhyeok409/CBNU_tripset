@@ -45,7 +45,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                   OutlinedButton(onPressed: () { setState(() {calendarView = CalendarView.day; calendarController.view = calendarView;}); }, child: Text("일간")),
                 ],
               ),
-              SizedBox(height: 16), // 위젯 간 간격 추가
+              // SizedBox(height: 16), // 위젯 간 간격 추가
               Expanded(
                 child: SfCalendar(
                   view: calendarView,
