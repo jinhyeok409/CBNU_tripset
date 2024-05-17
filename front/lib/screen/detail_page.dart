@@ -74,14 +74,23 @@ class PostDetailPageState extends State<PostDetailPage> {
   }
 
   Future<void> deletePost(String postId) async {
+    String? token = await storage.read(key: 'accessToken');
     String serverUri = dotenv.env['SERVER_URI']!;
     String deleteEndpoint = dotenv.env['POST_DELETE_ENDPOINT']!;
     String postId = Get.arguments;
+
+    Map<String, String> headers = {
+      'Authorization': '$token', // 토큰 값 추가
+    };
+
     try {
       String deleteUrl = "$serverUri$deleteEndpoint/$postId";
 
       // HTTP DELETE 요청 보내기
-      var response = await http.delete(Uri.parse(deleteUrl));
+      var response = await http.delete(
+        Uri.parse(deleteUrl),
+        headers: headers,
+      );
 
       if (response.statusCode == 200) {
         // 삭제 성공 시
@@ -89,6 +98,8 @@ class PostDetailPageState extends State<PostDetailPage> {
         // 이전 화면으로 이동 또는 다른 작업 수행
         Get.back();
       } else {
+        print(postId);
+        print(response.statusCode);
         // 삭제 실패 시
         print("게시물 삭제 실패");
         // 실패 메시지를 표시하거나 사용자에게 알림
@@ -184,8 +195,10 @@ class PostDetailPageState extends State<PostDetailPage> {
 }
 
 class EditPostPage extends StatelessWidget {
-  final String title;
-  final String content;
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _contentController = TextEditingController();
+  final String title; // 원래 제목
+  final String content; // 원래 이름
 
   EditPostPage({super.key, required this.title, required this.content});
 
@@ -210,7 +223,7 @@ class EditPostPage extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.send),
               onPressed: () {
-                //Get.to(() => EditPostPage());
+                updatePost(context);
               },
             ),
           ],
@@ -221,6 +234,7 @@ class EditPostPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
+                controller: _titleController,
                 initialValue: title,
                 decoration: InputDecoration(
                   labelText: '제목',
@@ -238,6 +252,7 @@ class EditPostPage extends StatelessWidget {
               ),
               SizedBox(height: 16),
               TextFormField(
+                controller: _contentController,
                 initialValue: content,
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
@@ -261,5 +276,36 @@ class EditPostPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void updatePost(BuildContext context) async {
+    String updateUrl = 'http://13.124.239.15/update/'; // 업데이트할 게시물의 URL
+    String newTitle = _titleController.text;
+    String newContent = _contentController.text;
+    try {
+      final response = await http.put(
+        Uri.parse(updateUrl),
+        body: {
+          'title': newTitle,
+          'content': newContent,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // 게시물 업데이트가 성공한 경우
+        print('게시물이 성공적으로 업데이트되었습니다.');
+        // 업데이트가 완료되면 이전 화면으로 이동
+        Navigator.of(context).pop();
+      } else {
+        // 게시물 업데이트가 실패한 경우
+        print('게시물 업데이트 실패: ${response.statusCode}');
+        // 실패 메시지를 사용자에게 보여줄 수 있습니다.
+        // 예를 들어 Get 패키지를 사용하여 에러 다이얼로그를 표시할 수 있습니다.
+      }
+    } catch (e) {
+      // 예외 발생 시 처리
+      print('게시물 업데이트 중 에러 발생: $e');
+      // 예외 처리 로직을 추가할 수 있습니다.
+    }
   }
 }
