@@ -29,6 +29,8 @@ class PostDetailPageState extends State<PostDetailPage> {
   String title = "";
   String content = "";
   String username = "";
+  String createDate = "";
+  int likeCount = 0;
   String tokenUsername = "";
   List<Map<String, dynamic>> comments = [];
 
@@ -66,6 +68,8 @@ class PostDetailPageState extends State<PostDetailPage> {
         content = data['content'];
         username = data['author']['username'];
         comments = List<Map<String, dynamic>>.from(data['commentDTOList']);
+        createDate = data['createDate'];
+        likeCount = data['likeCount'];
       });
     } else {
       print("fail");
@@ -150,7 +154,7 @@ class PostDetailPageState extends State<PostDetailPage> {
           ],
         ),
         body: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -160,6 +164,27 @@ class PostDetailPageState extends State<PostDetailPage> {
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    username,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  Text(
+                    createDate,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
               ),
               SizedBox(height: 16),
               Text(
@@ -306,7 +331,7 @@ class _EditPostPageState extends State<EditPostPage> {
           ],
         ),
         body: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
