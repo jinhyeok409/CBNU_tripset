@@ -73,6 +73,32 @@ class PostDetailPageState extends State<PostDetailPage> {
     }
   }
 
+  Future<void> deletePost(String postId) async {
+    String serverUri = dotenv.env['SERVER_URI']!;
+    String deleteEndpoint = dotenv.env['POST_DELETE_ENDPOINT']!;
+    String postId = Get.arguments;
+    try {
+      String deleteUrl = "$serverUri$deleteEndpoint/$postId";
+
+      // HTTP DELETE 요청 보내기
+      var response = await http.delete(Uri.parse(deleteUrl));
+
+      if (response.statusCode == 200) {
+        // 삭제 성공 시
+        print("게시물 삭제 성공");
+        // 이전 화면으로 이동 또는 다른 작업 수행
+        Get.back();
+      } else {
+        // 삭제 실패 시
+        print("게시물 삭제 실패");
+        // 실패 메시지를 표시하거나 사용자에게 알림
+      }
+    } catch (e) {
+      print("오류 발생: $e");
+      // 오류 처리
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -86,6 +112,7 @@ class PostDetailPageState extends State<PostDetailPage> {
             icon: Icon(Icons.arrow_back),
             onPressed: () {
               Get.back();
+              // GET.off 써서 뒤로가기
             },
           ),
           actions: [
@@ -101,9 +128,8 @@ class PostDetailPageState extends State<PostDetailPage> {
               IconButton(
                 icon: Icon(Icons.delete),
                 onPressed: () {
-                  // 게시물 삭제 처리
-                  // 삭제가 성공하면 이전 화면으로 이동 또는 다른 작업 수행
-                  // 예시: Get.back()을 호출하여 이전 화면으로 이동
+                  String postId = "your_post_id_here"; // 삭제할 게시물의 ID
+                  deletePost(postId);
                 },
               ),
           ],
