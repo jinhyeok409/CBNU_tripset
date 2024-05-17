@@ -204,7 +204,7 @@ class PostPageState extends State<PostPage> {
           print(response.body);
           Map<String, dynamic> responseData = json.decode(response.body);
           int id = responseData['id'];
-          Get.to(PostDetailPage(), arguments: id.toString());
+          Get.off(PostDetailPage(), arguments: id.toString());
         } else {
           print(response.body);
           print(response.headers);
