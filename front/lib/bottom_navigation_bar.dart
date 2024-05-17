@@ -1,12 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:front/screen/calendar_page.dart';
 import 'package:get/get.dart';
+import 'screen/home.dart';
+import 'screen/post_list.dart';
 
 class BottomNavController extends GetxController {
   var selectedIndex = 0.obs;
 
   void changeTabIndex(int index) {
     selectedIndex.value = index;
-    // 해당 인덱스의 페이지로 이동하기 추후 구현
+
+    switch (index) {
+      case 0:
+        Get.to(Home());
+        break;
+      case 1:
+        Get.to(CalendarWidget());
+        break;
+      case 2:
+        Get.to(PostList());
+        break;
+      case 3:
+        // 채팅 추후 구현
+        // Get.to(Chat());
+        break;
+      default:
+        break;
+    }
   }
 }
 
@@ -29,7 +49,7 @@ class BottomNavBar extends StatelessWidget {
     return Obx(
       () => Container(
         width: double.infinity,
-        height: 85,
+        height: MediaQuery.of(context).size.height * 0.1,
         decoration: BoxDecoration(
           color: Color(0xFFB0D1F8),
           borderRadius: BorderRadius.only(

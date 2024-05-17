@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:front/model/post.dart';
 import 'package:get/get.dart';
 import '../bottom_navigation_bar.dart';
 import '../controller/infinite_scroll_controller.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import './write_page.dart';
+import './detail_page.dart';
 
+// 디버그용
 void main() async {
   await dotenv.load(fileName: ".env");
   runApp(PostList());
@@ -19,7 +21,7 @@ class PostList extends StatelessWidget {
   Widget build(BuildContext context) {
     final PostListScrollController postListScrollController =
         Get.put(PostListScrollController());
-    return GetMaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
           appBar: AppBar(
@@ -41,7 +43,6 @@ class PostList extends StatelessWidget {
                                     'ALL';
                                 postListScrollController.nextLink.value = '';
                                 postListScrollController.reload();
-                                // 전체게시판으로 이동 추후 구현
                               },
                               child: Text(
                                 '전체',
@@ -66,7 +67,6 @@ class PostList extends StatelessWidget {
                                     'FREE';
                                 postListScrollController.nextLink.value = '';
                                 postListScrollController.reload();
-                                // 자유게시판으로 이동 추후 구현
                               },
                               child: Text(
                                 '자유',
@@ -90,7 +90,6 @@ class PostList extends StatelessWidget {
                                       .currentCategory('PLAN');
                                   postListScrollController.nextLink.value = '';
                                   postListScrollController.reload();
-                                  // 계획게시판으로 이동 추후 구현
                                 },
                                 child: Text(
                                   '계획',
@@ -164,7 +163,7 @@ class PostList extends StatelessWidget {
                   backgroundColor: Color(0xFF5BB6FF),
                   shape: CircleBorder(),
                   onPressed: () {
-                    // 게시글 작성 페이지로 이동 추후 구현
+                    Get.to(PostPage());
                   },
                   child: Icon(
                     Icons.edit,
@@ -229,6 +228,7 @@ class PostListView extends StatelessWidget {
                           post.content,
                           style:
                               TextStyle(color: Color(0xFF565656), fontSize: 15),
+                          maxLines: 2,
                         ),
                       ),
                       SizedBox(
@@ -278,6 +278,8 @@ class PostListView extends StatelessWidget {
                       ),
                     ],
                   ),
+                  onTap: () =>
+                      Get.to(PostDetailPage(), arguments: post.id.toString()),
                 );
               } else if (postListScrollController.hasMore.value) {
                 // 더 불러올 데이터가 있는 경우

@@ -1,15 +1,11 @@
 import 'dart:convert';
 import 'package:front/screen/home.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart';
-import 'package:jwt_decoder/jwt_decoder.dart'; // jwt 토큰 디코더
 import 'package:flutter_secure_storage/flutter_secure_storage.dart'; // 암호화 저장 토큰저장시 씀
-//메롱
 import 'package:flutter/cupertino.dart';
 import 'package:front/screen/register.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import '../model/user.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 TextEditingController usernameController = TextEditingController();
@@ -30,7 +26,9 @@ class LoginState extends State<Login> {
     final storage = FlutterSecureStorage();
     Future login(String username, String password) async {
       try {
-        String loginUri = dotenv.env['LOGIN_URI']!;
+        String serverUri = dotenv.env['SERVER_URI']!;
+        String loginEndpoint = dotenv.env['LOGIN_ENDPOINT']!;
+        String loginUri = '$serverUri$loginEndpoint';
 
         var response = await http.post(
           Uri.parse(loginUri),

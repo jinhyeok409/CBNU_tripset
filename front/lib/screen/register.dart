@@ -1,12 +1,8 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:front/screen/login.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import '../model/user.dart';
 
 TextEditingController usernameController = TextEditingController();
 TextEditingController passwordController = TextEditingController();
@@ -23,7 +19,9 @@ class RegisterState extends State<Register> {
   Widget build(BuildContext context) {
     Future register(String username, String password) async {
       try {
-        String registerUri = dotenv.env['REGISTER_URI']!;
+        String serverUri = dotenv.env['SERVER_URI']!;
+        String registerEndpoint = dotenv.env['REGISTER_ENDPOINT']!;
+        String registerUri = '$serverUri$registerEndpoint';
 
         var response = await http.post(
           Uri.parse(registerUri),
@@ -38,6 +36,7 @@ class RegisterState extends State<Register> {
           print(response.body);
           Get.to(Login());
         } else {
+          print(response.statusCode);
           print('fail');
         }
       } catch (e) {

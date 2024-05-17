@@ -1,1 +1,1 @@
-class writePost {}
+class WritePost {}
