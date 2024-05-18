@@ -25,12 +25,14 @@ class PostDetailPage extends StatefulWidget {
 }
 
 class PostDetailPageState extends State<PostDetailPage> {
+  final TextEditingController _commentController = TextEditingController();
   final storage = FlutterSecureStorage();
   String title = "";
   String content = "";
   String username = "";
   String createDate = "";
   int likeCount = 0;
+  bool isLiked = true;
   String tokenUsername = "";
   List<Map<String, dynamic>> comments = [];
 
@@ -78,6 +80,39 @@ class PostDetailPageState extends State<PostDetailPage> {
     }
   }
 
+  Future<void> toggleLike() async {
+    // 수정해야함
+    String? token = await storage.read(key: 'accessToken');
+    if (token == null) {
+      print('Token is null');
+      return;
+    }
+
+    String postId = Get.arguments;
+    String serverUri = dotenv.env['SERVER_URI']!;
+    String likeEndpoint = dotenv.env['POST_LIKE_ENDPOINT']!;
+    String likeUrl = "$serverUri$likeEndpoint/$postId";
+
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $token',
+    };
+
+    try {
+      final response = await http.post(Uri.parse(likeUrl), headers: headers);
+
+      if (response.statusCode == 200) {
+        setState(() {
+          isLiked = !isLiked;
+          likeCount += isLiked ? 1 : -1;
+        });
+      } else {
+        print("Failed to toggle like, status code: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error toggling like: $e");
+    }
+  }
+
   Future<void> deletePost(String postId) async {
     String? token = await storage.read(key: 'accessToken');
     String serverUri = dotenv.env['SERVER_URI']!;
@@ -117,105 +152,143 @@ class PostDetailPageState extends State<PostDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'DetailPage',
-      home: Scaffold(
-        appBar: AppBar(
-          title: null,
-          leading: IconButton(
-            // 왼쪽에 뒤로가기 아이콘 추가
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              Get.off(PostList());
-              // GET.off 써서 뒤로가기
-            },
-          ),
-          actions: [
-            if (isAuthorVerified(username, tokenUsername)) // 저자 확인 함수 호출
-              IconButton(
-                icon: Icon(Icons.edit),
-                onPressed: () {
-                  String postId = Get.arguments;
-                  print(postId);
-                  // 게시물 수정 페이지로 이동
-                  Get.to(() => EditPostPage(
-                      title: title, content: content, postId: postId));
-                },
-              ),
-            if (isAuthorVerified(username, tokenUsername)) // 저자 확인 함수 호출
-              IconButton(
-                icon: Icon(Icons.delete),
-                onPressed: () {
-                  String postId = Get.arguments;
-                  deletePost(postId);
-                },
-              ),
-          ],
-        ),
-        body: Padding(
-          padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    username,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.normal,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  Text(
-                    createDate,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.normal,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
-              Text(
-                content,
-                style: TextStyle(fontSize: 18),
-              ),
-              Divider(),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: comments.length,
-                  itemBuilder: (_, index) {
-                    return ListTile(
-                      title: Text(
-                        comments[index]['author']['username'],
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black54),
-                      ),
-                      subtitle: Text(
-                        comments[index]['comment'],
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.black87),
-                      ),
-                    );
+    return GestureDetector(
+      onTap: () {
+        // 포커스 해제
+        FocusScope.of(context).unfocus();
+      },
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'DetailPage',
+        home: Scaffold(
+          appBar: AppBar(
+            title: null,
+            leading: IconButton(
+              // 왼쪽에 뒤로가기 아이콘 추가
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Get.off(PostList());
+                // GET.off 써서 뒤로가기
+              },
+            ),
+            actions: [
+              if (isAuthorVerified(username, tokenUsername)) // 저자 확인 함수 호출
+                IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: () {
+                    String postId = Get.arguments;
+                    print(postId);
+                    // 게시물 수정 페이지로 이동
+                    Get.to(() => EditPostPage(
+                        title: title, content: content, postId: postId));
                   },
                 ),
-              ),
+              if (isAuthorVerified(username, tokenUsername)) // 저자 확인 함수 호출
+                IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () {
+                    String postId = Get.arguments;
+                    deletePost(postId);
+                  },
+                ),
             ],
+          ),
+          body: Padding(
+            padding:
+                const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      username,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    Text(
+                      createDate,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                Text(
+                  content,
+                  style: TextStyle(fontSize: 18),
+                ),
+                Divider(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(likeCount.toString()),
+                    IconButton(
+                      icon: Icon(
+                        isLiked ? Icons.favorite : Icons.favorite_border,
+                        color: isLiked ? Colors.red : null,
+                      ),
+                      onPressed: () {
+                        String postId = Get.arguments;
+                        print(postId);
+                      },
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: comments.length,
+                    itemBuilder: (_, index) {
+                      return ListTile(
+                        title: Text(
+                          comments[index]['author']['username'],
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black54),
+                        ),
+                        subtitle: Text(
+                          comments[index]['comment'],
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.black87),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                TextField(
+                  controller: _commentController,
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),
+                  decoration: InputDecoration(
+                    labelText: '내용을 입력하세요.',
+                    labelStyle: TextStyle(
+                      fontWeight: FontWeight.w300,
+                      color: Colors.blue.shade200,
+                    ),
+                    border: InputBorder.none,
+                  ),
+                  maxLines: null, // 텍스트 필드의 높이를 사용자가 입력한 텍스트에 따라 자동으로 조정
+                ),
+              ],
+            ),
           ),
         ),
       ),
