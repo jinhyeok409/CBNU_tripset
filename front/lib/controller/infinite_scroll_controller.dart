@@ -15,16 +15,20 @@ class PostListScrollController extends GetxController {
 
   @override
   void onInit() {
+    super.onInit();
     print('init controller');
     _getData(category: currentCategory.value);
     scrollController.addListener(() {
-      if (scrollController.position.pixels ==
-              scrollController.position.maxScrollExtent &&
-          hasMore.value) {
-        _getData(category: currentCategory.value);
+      try {
+        if (scrollController.position.pixels ==
+                scrollController.position.maxScrollExtent &&
+            hasMore.value) {
+          _getData(category: currentCategory.value);
+        }
+      } catch (e) {
+        print('Error in scrollController listener: $e');
       }
     });
-    super.onInit();
   }
 
   @override
