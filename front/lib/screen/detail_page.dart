@@ -234,8 +234,13 @@ class PostDetailPageState extends State<PostDetailPage> {
                 ),
                 Divider(),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
+                    Text(
+                      '댓글 ${comments.length}',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                    ),
+                    Spacer(),
                     Text(likeCount.toString()),
                     IconButton(
                       icon: Icon(
@@ -254,6 +259,7 @@ class PostDetailPageState extends State<PostDetailPage> {
                     itemCount: comments.length,
                     itemBuilder: (_, index) {
                       return ListTile(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 3.0),
                         title: Text(
                           comments[index]['author']['username'],
                           style: TextStyle(
@@ -261,12 +267,24 @@ class PostDetailPageState extends State<PostDetailPage> {
                               fontWeight: FontWeight.w600,
                               color: Colors.black54),
                         ),
-                        subtitle: Text(
-                          comments[index]['comment'],
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.black87),
+                        subtitle: Row(
+                          children: [
+                            Text(
+                              comments[index]['comment'],
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            Spacer(),
+                            IconButton(
+                              icon: Icon(Icons.favorite_border),
+                              onPressed: () {
+                                // 좋아요 기능 추후 구현
+                              },
+                            ),
+                          ],
                         ),
                       );
                     },
@@ -302,11 +320,11 @@ class EditPostPage extends StatefulWidget {
   final String postId; // id
 
   EditPostPage({
-    Key? key,
+    super.key,
     required this.title,
     required this.content,
     required this.postId,
-  }) : super(key: key);
+  });
 
   @override
   _EditPostPageState createState() => _EditPostPageState();
