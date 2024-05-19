@@ -203,7 +203,7 @@ class PostListView extends StatelessWidget {
         } else {
           // 데이터가 있는 경우 게시물 목록 표시
           return ListView.separated(
-            controller: postListScrollController.scrollController.value,
+            controller: postListScrollController.scrollController,
             itemCount: postListScrollController.posts.length +
                 (postListScrollController.hasMore.value ? 1 : 0),
             separatorBuilder: (context, index) => Divider(),
@@ -259,7 +259,7 @@ class PostListView extends StatelessWidget {
                             ),
                           ],
                           // 좋아요 개수
-                          if (post.commentCount > 0) ...[
+                          if (post.likeCount > 0) ...[
                             SizedBox(
                               width: 13,
                             ),

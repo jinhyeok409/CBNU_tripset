@@ -6,7 +6,7 @@ import 'dart:convert';
 import '../model/post.dart';
 
 class PostListScrollController extends GetxController {
-  var scrollController = ScrollController().obs;
+  final scrollController = ScrollController();
   var posts = <Post>[].obs;
   var isLoading = false.obs;
   var hasMore = false.obs;
@@ -15,16 +15,26 @@ class PostListScrollController extends GetxController {
 
   @override
   void onInit() {
+    super.onInit();
     print('init controller');
     _getData(category: currentCategory.value);
-    scrollController.value.addListener(() {
-      if (scrollController.value.position.pixels ==
-              scrollController.value.position.maxScrollExtent &&
-          hasMore.value) {
-        _getData(category: currentCategory.value);
+    scrollController.addListener(() {
+      try {
+        if (scrollController.position.pixels ==
+                scrollController.position.maxScrollExtent &&
+            hasMore.value) {
+          _getData(category: currentCategory.value);
+        }
+      } catch (e) {
+        print('Error in scrollController listener: $e');
       }
     });
-    super.onInit();
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
   }
 
   _getData({String? category}) async {
