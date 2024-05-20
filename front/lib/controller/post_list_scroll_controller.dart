@@ -6,6 +6,8 @@ import 'dart:convert';
 import '../model/post.dart';
 
 class PostListScrollController extends GetxController {
+  static PostListScrollController get instance => Get.find();
+
   final scrollController = ScrollController();
   var posts = <Post>[].obs;
   var isLoading = false.obs;
@@ -35,6 +37,12 @@ class PostListScrollController extends GetxController {
   void dispose() {
     scrollController.dispose();
     super.dispose();
+  }
+
+  @override
+  void onClose() {
+    scrollController.dispose();
+    super.onClose();
   }
 
   _getData({String? category}) async {
@@ -83,7 +91,8 @@ class PostListScrollController extends GetxController {
 
     isLoading.value = true;
     posts.clear();
-    //currentCategory.value = category ?? 'ALL';
+    nextLink.value = '';
+    currentCategory.value = category ?? 'ALL';
 
     print(currentCategory);
     isLoading.value = false;

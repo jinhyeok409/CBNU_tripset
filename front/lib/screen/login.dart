@@ -48,7 +48,7 @@ class LoginState extends State<Login> {
           if (token != null) {
             await storage.write(key: 'accessToken', value: token);
             print('Login successful.');
-            Get.to(Home());
+            Get.toNamed('/home');
           }
         } else {
           print('login failed');
@@ -231,11 +231,7 @@ class LoginState extends State<Login> {
                         ),
                         InkWell(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Register()),
-                            );
+                            Get.toNamed('/register');
                           },
                           child: Text(
                             "Don't have Account?",

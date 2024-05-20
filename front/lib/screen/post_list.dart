@@ -1,26 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:front/model/post.dart';
 import 'package:get/get.dart';
 import '../bottom_navigation_bar.dart';
-import '../controller/infinite_scroll_controller.dart';
+import '../controller/post_list_scroll_controller.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import './write_page.dart';
 import './detail_page.dart';
 
-// 디버그용
-void main() async {
-  await dotenv.load(fileName: ".env");
-  runApp(PostList());
-}
-
-class PostList extends StatelessWidget {
+class PostList extends GetView<PostListScrollController> {
   const PostList({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final PostListScrollController postListScrollController =
-        Get.put(PostListScrollController());
+    final postListScrollController = Get.find<PostListScrollController>();
+    //final postListScrollController = controller;
+    final scrollController = postListScrollController.scrollController;
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -39,10 +34,8 @@ class PostList extends StatelessWidget {
                           Obx(
                             () => InkWell(
                               onTap: () {
-                                postListScrollController.currentCategory.value =
-                                    'ALL';
-                                postListScrollController.nextLink.value = '';
-                                postListScrollController.reload();
+                                postListScrollController.reload(
+                                    category: 'ALL');
                               },
                               child: Text(
                                 '전체',
@@ -63,10 +56,8 @@ class PostList extends StatelessWidget {
                           Obx(
                             () => InkWell(
                               onTap: () {
-                                postListScrollController.currentCategory.value =
-                                    'FREE';
-                                postListScrollController.nextLink.value = '';
-                                postListScrollController.reload();
+                                postListScrollController.reload(
+                                    category: 'FREE');
                               },
                               child: Text(
                                 '자유',
@@ -86,10 +77,8 @@ class PostList extends StatelessWidget {
                           ),
                           Obx(() => InkWell(
                                 onTap: () {
-                                  postListScrollController
-                                      .currentCategory('PLAN');
-                                  postListScrollController.nextLink.value = '';
-                                  postListScrollController.reload();
+                                  postListScrollController.reload(
+                                      category: 'PLAN');
                                 },
                                 child: Text(
                                   '계획',
@@ -141,7 +130,7 @@ class PostList extends StatelessWidget {
             ),
           ),
           body: Stack(children: [
-            PostListView(),
+            PostListView(scrollController: scrollController),
 
             // bottomNavigaitionBar
             Align(
@@ -163,7 +152,7 @@ class PostList extends StatelessWidget {
                   backgroundColor: Color(0xFF5BB6FF),
                   shape: CircleBorder(),
                   onPressed: () {
-                    Get.to(PostPage());
+                    Get.toNamed('/postWrite');
                   },
                   child: Icon(
                     Icons.edit,
@@ -177,11 +166,13 @@ class PostList extends StatelessWidget {
 
 // 게시글 목록
 class PostListView extends StatelessWidget {
-  final postListScrollController = Get.find<PostListScrollController>();
-  PostListView({super.key});
+  final ScrollController scrollController;
+
+  PostListView({super.key, required this.scrollController});
 
   @override
   Widget build(BuildContext context) {
+    final postListScrollController = Get.find<PostListScrollController>();
     return Padding(
       padding: const EdgeInsets.only(bottom: 75),
       child: Obx(() {
@@ -203,7 +194,7 @@ class PostListView extends StatelessWidget {
         } else {
           // 데이터가 있는 경우 게시물 목록 표시
           return ListView.separated(
-            controller: postListScrollController.scrollController,
+            controller: scrollController,
             itemCount: postListScrollController.posts.length +
                 (postListScrollController.hasMore.value ? 1 : 0),
             separatorBuilder: (context, index) => Divider(),
@@ -279,7 +270,7 @@ class PostListView extends StatelessWidget {
                     ],
                   ),
                   onTap: () =>
-                      Get.to(PostDetailPage(), arguments: post.id.toString()),
+                      Get.toNamed('/postDetail', arguments: post.id.toString()),
                 );
               } else if (postListScrollController.hasMore.value) {
                 // 더 불러올 데이터가 있는 경우

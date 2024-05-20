@@ -12,13 +12,13 @@ class BottomNavController extends GetxController {
 
     switch (index) {
       case 0:
-        Get.to(Home());
+        Get.toNamed('/home');
         break;
       case 1:
-        Get.to(CalendarWidget());
+        Get.toNamed('/calendar');
         break;
       case 2:
-        Get.to(PostList());
+        Get.toNamed('/postList');
         break;
       case 3:
         // 채팅 추후 구현

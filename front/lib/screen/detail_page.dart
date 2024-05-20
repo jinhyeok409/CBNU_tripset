@@ -136,7 +136,7 @@ class PostDetailPageState extends State<PostDetailPage> {
         // 삭제 성공 시
         print("게시물 삭제 성공");
         // 이전 화면으로 이동 또는 다른 작업 수행
-        Get.off(PostList());
+        Get.offNamed('/postList');
       } else {
         print(postId);
         print(response.statusCode);
@@ -167,8 +167,9 @@ class PostDetailPageState extends State<PostDetailPage> {
               // 왼쪽에 뒤로가기 아이콘 추가
               icon: Icon(Icons.arrow_back),
               onPressed: () {
-                Get.off(PostList());
-                // GET.off 써서 뒤로가기
+                //Get.off(() => PostList());
+                Get.back();
+                // 뒤로가기
               },
             ),
             actions: [
@@ -179,8 +180,11 @@ class PostDetailPageState extends State<PostDetailPage> {
                     String postId = Get.arguments;
                     print(postId);
                     // 게시물 수정 페이지로 이동
-                    Get.to(() => EditPostPage(
-                        title: title, content: content, postId: postId));
+                    Get.toNamed('/postEdit', arguments: {
+                      'title': title,
+                      'content': content,
+                      'postId': postId,
+                    });
                   },
                 ),
               if (isAuthorVerified(username, tokenUsername)) // 저자 확인 함수 호출
@@ -315,17 +319,6 @@ class PostDetailPageState extends State<PostDetailPage> {
 }
 
 class EditPostPage extends StatefulWidget {
-  final String title; // 원래 제목
-  final String content; // 원래 내용
-  final String postId; // id
-
-  EditPostPage({
-    super.key,
-    required this.title,
-    required this.content,
-    required this.postId,
-  });
-
   @override
   _EditPostPageState createState() => _EditPostPageState();
 }
@@ -334,12 +327,19 @@ class _EditPostPageState extends State<EditPostPage> {
   late TextEditingController _posttitleController;
   late TextEditingController _postcontentController;
   String _selectedCategory = 'FREE';
+  late String _postId;
 
   @override
   void initState() {
     super.initState();
-    _posttitleController = TextEditingController(text: widget.title);
-    _postcontentController = TextEditingController(text: widget.content);
+    // Get.arguments에서 인수를 받아오는 부분
+    final Map<String, dynamic> args = Get.arguments;
+    final String title = args['title'];
+    final String content = args['content'];
+    _postId = args['postId'];
+
+    _posttitleController = TextEditingController(text: title);
+    _postcontentController = TextEditingController(text: content);
   }
 
   @override
@@ -351,12 +351,12 @@ class _EditPostPageState extends State<EditPostPage> {
 
   void updatePost(BuildContext context) async {
     print("포스트 아이디");
-    print(widget.postId);
+    print(_postId);
     final storage = FlutterSecureStorage();
     String serverUri = dotenv.env['SERVER_URI']!;
     String postUpdateEndpoint =
         dotenv.env['POST_UPDATE_ENDPOINT']!; // 업데이트할 게시물의 URL
-    String updateUrl = "$serverUri$postUpdateEndpoint/${widget.postId}";
+    String updateUrl = "$serverUri$postUpdateEndpoint/$_postId";
     String category = _selectedCategory;
 
     String? token = await storage.read(key: 'accessToken');
@@ -381,7 +381,7 @@ class _EditPostPageState extends State<EditPostPage> {
       if (response.statusCode == 200) {
         // 게시물 업데이트가 성공한 경우
         print('게시물이 성공적으로 업데이트되었습니다.');
-        Get.off(PostDetailPage(), arguments: widget.postId.toString());
+        Get.offNamed('/postDetail', arguments: _postId.toString());
       } else {
         // 게시물 업데이트가 실패한 경우
         print('게시물 업데이트 실패: ${response.statusCode}');
