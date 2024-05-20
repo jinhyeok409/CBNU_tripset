@@ -46,10 +46,18 @@ class BottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final BottomNavController bottomNavController =
         Get.put(BottomNavController());
+    final double iconSize =
+        MediaQuery.of(context).size.width * 0.08; // 아이콘 크기를 화면 너비의 8%로 설정
+    final double navBarHeight =
+        MediaQuery.of(context).size.height * 0.1; // 하단바 높이를 화면 높이의 10%로 설정
+    final double horizontal_margin =
+        MediaQuery.of(context).size.width * 0.08; // 아이콘 간격을 화면 너비의 8%로 설정
+    final double vertical_margin =
+        MediaQuery.of(context).size.width * 0.06; // 아이콘 간격을 화면 너비의 8%로 설정
     return Obx(
       () => Container(
         width: double.infinity,
-        height: MediaQuery.of(context).size.height * 0.1,
+        height: navBarHeight,
         decoration: BoxDecoration(
           color: Color(0xFFB0D1F8),
           borderRadius: BorderRadius.only(
@@ -71,15 +79,12 @@ class BottomNavBar extends StatelessWidget {
                   children: [
                     Container(
                       alignment: Alignment.center,
-                      margin: EdgeInsets.only(
-                        top: 20,
-                        bottom: 0,
-                        left: 35,
-                        right: 35,
-                      ),
+                      margin: EdgeInsets.symmetric(
+                          horizontal: horizontal_margin,
+                          vertical: vertical_margin),
                       child: Icon(
                         icon,
-                        size: 32,
+                        size: iconSize,
                         color: isSelected ? Colors.blue : Colors.white,
                       ),
                     ),
