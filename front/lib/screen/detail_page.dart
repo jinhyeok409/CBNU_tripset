@@ -61,7 +61,7 @@ class PostDetailPageState extends State<PostDetailPage> {
     final response =
         await http.get(Uri.parse('$serverUri$postEndpoint/$postId'));
 
-    _commentController.text = '';
+    _commentController.text = ''; // 댓글 작성용
 
     if (response.statusCode == 200) {
       // 서버에서 데이터를 성공적으로 받았을 때
