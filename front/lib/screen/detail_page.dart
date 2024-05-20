@@ -60,6 +60,9 @@ class PostDetailPageState extends State<PostDetailPage> {
     String postEndpoint = dotenv.env['POST_ENDPOINT']!;
     final response =
         await http.get(Uri.parse('$serverUri$postEndpoint/$postId'));
+
+    _commentController.text = '';
+
     if (response.statusCode == 200) {
       // 서버에서 데이터를 성공적으로 받았을 때
       print("success");
@@ -94,7 +97,7 @@ class PostDetailPageState extends State<PostDetailPage> {
     String likeUrl = "$serverUri$likeEndpoint/$postId";
 
     Map<String, String> headers = {
-      'Authorization': 'Bearer $token',
+      'Authorization': '$token',
     };
 
     try {
@@ -142,6 +145,48 @@ class PostDetailPageState extends State<PostDetailPage> {
         print(response.statusCode);
         // 삭제 실패 시
         print("게시물 삭제 실패");
+        // 실패 메시지를 표시하거나 사용자에게 알림
+      }
+    } catch (e) {
+      print("오류 발생: $e");
+      // 오류 처리
+    }
+  }
+
+  Future<void> createComment(BuildContext context) async {
+    String? token = await storage.read(key: 'accessToken');
+    String serverUri = dotenv.env['SERVER_URI']!;
+    String createEndpoint = dotenv.env['COMMENT_CREATE_ENDPOINT']!;
+    String postId = Get.arguments;
+    String comment = _commentController.text;
+
+    Map<String, String> headers = {
+      'Authorization': '$token', // 토큰 값 추가
+    };
+
+    try {
+      String createCommentUrl = "$serverUri$createEndpoint/$postId";
+
+      // HTTP POST 요청 보내기
+      var response = await http.post(
+        Uri.parse(createCommentUrl),
+        headers: headers,
+        body: {
+          'comment': comment,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // 댓글 작성 성공 시
+        print("댓글 작성 성공");
+        // 이전 화면으로 이동 또는 다른 작업 수행
+        Get.offNamed('/postDetail', arguments: postId.toString());
+        fetchPostData();
+      } else {
+        print(postId);
+        print(response.statusCode);
+        // 댓글 작성 실패 시
+        print("댓글 작성 실패");
         // 실패 메시지를 표시하거나 사용자에게 알림
       }
     } catch (e) {
@@ -294,20 +339,33 @@ class PostDetailPageState extends State<PostDetailPage> {
                     },
                   ),
                 ),
-                TextField(
-                  controller: _commentController,
-                  style: TextStyle(
-                    fontSize: 18,
-                  ),
-                  decoration: InputDecoration(
-                    labelText: '내용을 입력하세요.',
-                    labelStyle: TextStyle(
-                      fontWeight: FontWeight.w300,
-                      color: Colors.blue.shade200,
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: TextField(
+                        controller: _commentController,
+                        style: TextStyle(
+                          fontSize: 18,
+                        ),
+                        decoration: InputDecoration(
+                          labelText: '내용을 입력하세요.',
+                          labelStyle: TextStyle(
+                            fontWeight: FontWeight.w300,
+                          ),
+                          border: InputBorder.none,
+                        ),
+                        maxLines: null, // 텍스트 필드의 높이를 사용자가 입력한 텍스트에 따라 자동으로 조정
+                      ),
                     ),
-                    border: InputBorder.none,
-                  ),
-                  maxLines: null, // 텍스트 필드의 높이를 사용자가 입력한 텍스트에 따라 자동으로 조정
+                    IconButton(
+                      icon: Icon(Icons.send),
+                      color: Colors.blue.shade200,
+                      onPressed: () {
+                        createComment(context);
+                        print('댓글 작성 버튼 눌림');
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),
