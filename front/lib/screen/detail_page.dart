@@ -32,7 +32,7 @@ class PostDetailPageState extends State<PostDetailPage> {
   String username = "";
   String createDate = "";
   int likeCount = 0;
-  bool isLiked = true;
+  bool isLiked = false;
   String tokenUsername = "";
   List<Map<String, dynamic>> comments = [];
 
@@ -83,7 +83,7 @@ class PostDetailPageState extends State<PostDetailPage> {
     }
   }
 
-  Future<void> toggleLike() async {
+  Future<void> postLike() async {
     // 수정해야함
     String? token = await storage.read(key: 'accessToken');
     if (token == null) {
@@ -166,28 +166,45 @@ class PostDetailPageState extends State<PostDetailPage> {
 
     try {
       String createCommentUrl = "$serverUri$createEndpoint/$postId";
-
-      // HTTP POST 요청 보내기
-      var response = await http.post(
-        Uri.parse(createCommentUrl),
-        headers: headers,
-        body: {
-          'comment': comment,
-        },
-      );
-
-      if (response.statusCode == 200) {
-        // 댓글 작성 성공 시
-        print("댓글 작성 성공");
-        // 이전 화면으로 이동 또는 다른 작업 수행
-        Get.offNamed('/postDetail', arguments: postId.toString());
-        fetchPostData();
+      if (comment.isEmpty) {
+        Get.dialog(
+          AlertDialog(
+            title: Text('경고'),
+            content: Text('내용을 입력해주세요.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  // Get 패키지의 dialog 메서드를 사용하여 다이얼로그를 닫습니다.
+                  Get.back();
+                },
+                child: Text('확인'),
+              ),
+            ],
+          ),
+        );
       } else {
-        print(postId);
-        print(response.statusCode);
-        // 댓글 작성 실패 시
-        print("댓글 작성 실패");
-        // 실패 메시지를 표시하거나 사용자에게 알림
+        // HTTP POST 요청 보내기
+        var response = await http.post(
+          Uri.parse(createCommentUrl),
+          headers: headers,
+          body: {
+            'comment': comment,
+          },
+        );
+
+        if (response.statusCode == 200) {
+          // 댓글 작성 성공 시
+          print("댓글 작성 성공");
+          // 이전 화면으로 이동 또는 다른 작업 수행
+          Get.offNamed('/postDetail', arguments: postId.toString());
+          fetchPostData();
+        } else {
+          print(postId);
+          print(response.statusCode);
+          // 댓글 작성 실패 시
+          print("댓글 작성 실패");
+          // 실패 메시지를 표시하거나 사용자에게 알림
+        }
       }
     } catch (e) {
       print("오류 발생: $e");
@@ -297,8 +314,7 @@ class PostDetailPageState extends State<PostDetailPage> {
                         color: isLiked ? Colors.red : null,
                       ),
                       onPressed: () {
-                        String postId = Get.arguments;
-                        print(postId);
+                        postLike();
                       },
                     ),
                   ],
