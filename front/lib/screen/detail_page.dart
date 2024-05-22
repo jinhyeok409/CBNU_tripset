@@ -121,40 +121,65 @@ class PostDetailPageState extends State<PostDetailPage> {
     }
   }
 
-  Future<void> deletePost(String postId) async {
-    String? token = await storage.read(key: 'accessToken');
-    String serverUri = dotenv.env['SERVER_URI']!;
-    String deleteEndpoint = dotenv.env['POST_DELETE_ENDPOINT']!;
-    String postId = Get.arguments;
+  Future<void> deletePost(BuildContext context, String postId) async {
+    // 추가: 사용자의 확인 여부를 받기 위한 다이얼로그 표시
+    bool confirmDelete = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('게시물 삭제'),
+          content: Text('게시물을 삭제하시겠습니까?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // 취소 버튼 클릭 시 false 반환
+              },
+              child: Text('예'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // 확인 버튼 클릭 시 true 반환
+              },
+              child: Text('아니오'),
+            ),
+          ],
+        );
+      },
+    );
 
-    Map<String, String> headers = {
-      'Authorization': '$token', // 토큰 값 추가
-    };
+    // 사용자가 확인을 선택한 경우에만 게시물 삭제 진행
+    if (confirmDelete == true) {
+      String? token = await storage.read(key: 'accessToken');
+      String serverUri = dotenv.env['SERVER_URI']!;
+      String deleteEndpoint = dotenv.env['POST_DELETE_ENDPOINT']!;
 
-    try {
-      String deleteUrl = "$serverUri$deleteEndpoint/$postId";
+      Map<String, String> headers = {
+        'Authorization': '$token', // 토큰 값 추가
+      };
 
-      // HTTP DELETE 요청 보내기
-      var response = await http.delete(
-        Uri.parse(deleteUrl),
-        headers: headers,
-      );
+      try {
+        String deleteUrl = "$serverUri$deleteEndpoint/$postId";
 
-      if (response.statusCode == 200) {
-        // 삭제 성공 시
-        print("게시물 삭제 성공");
-        // 이전 화면으로 이동 또는 다른 작업 수행
-        Get.offNamed('/postList');
-      } else {
-        print(postId);
-        print(response.statusCode);
-        // 삭제 실패 시
-        print("게시물 삭제 실패");
-        // 실패 메시지를 표시하거나 사용자에게 알림
+        // HTTP DELETE 요청 보내기
+        var response = await http.delete(
+          Uri.parse(deleteUrl),
+          headers: headers,
+        );
+
+        if (response.statusCode == 200) {
+          // 삭제 성공 시
+          print("게시물 삭제 성공");
+          // 이전 화면으로 이동 또는 다른 작업 수행
+          Get.offNamed('/postList');
+        } else {
+          // 삭제 실패 시
+          print("게시물 삭제 실패: ${response.statusCode}");
+          // 실패 메시지를 표시하거나 사용자에게 알림
+        }
+      } catch (e) {
+        // 오류 발생 시 처리
+        print("오류 발생: $e");
       }
-    } catch (e) {
-      print("오류 발생: $e");
-      // 오류 처리
     }
   }
 
@@ -217,7 +242,7 @@ class PostDetailPageState extends State<PostDetailPage> {
     }
   }
 
-  Future<void> modifyComment(BuildContext context) async {
+  /*Future<void> modifyComment(BuildContext context) async {
     String? token = await storage.read(key: 'accessToken');
     String serverUri = dotenv.env['SERVER_URI']!;
     String modifyEndpoint = dotenv.env['COMMENT_MODIFY_ENDPOINT']!;
@@ -274,47 +299,60 @@ class PostDetailPageState extends State<PostDetailPage> {
       print("오류 발생: $e");
       // 오류 처리
     }
-  }
+  }*/
 
-  Future<void> deleteComment(BuildContext context) async {
-    String? token = await storage.read(key: 'accessToken');
-    String serverUri = dotenv.env['SERVER_URI']!;
-    String deleteEndpoint = dotenv.env['COMMENT_DELETE_ENDPOINT']!;
-    String postId = Get.arguments;
-    String comment = _commentController.text;
+  Future<void> deleteComment(BuildContext context, String commentId) async {
+    // 추가: 사용자의 확인 여부를 받기 위한 다이얼로그 표시
+    bool confirmDelete = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('댓글 삭제'),
+          content: Text('댓글을 삭제하시겠습니까?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // 취소 버튼 클릭 시 false 반환
+              },
+              child: Text('예'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // 확인 버튼 클릭 시 true 반환
+              },
+              child: Text('아니오'),
+            ),
+          ],
+        );
+      },
+    );
 
-    Map<String, String> headers = {
-      'Authorization': '$token', // 토큰 값 추가
-    };
+    // 사용자가 확인을 선택한 경우에만 댓글 삭제 진행
+    if (confirmDelete == true) {
+      String? token = await storage.read(key: 'accessToken');
+      String serverUri = dotenv.env['SERVER_URI']!;
+      String deleteEndpoint = dotenv.env['COMMENT_DELETE_ENDPOINT']!;
+      String deleteUrl = "$serverUri$deleteEndpoint/$commentId";
 
-    try {
-      String createCommentUrl = "$serverUri$deleteEndpoint/$postId";
+      Map<String, String> headers = {
+        'Authorization': '$token', // 토큰 값 추가
+      };
 
-      // HTTP POST 요청 보내기
-      var response = await http.post(
-        Uri.parse(createCommentUrl),
-        headers: headers,
-        body: {
-          'comment': comment,
-        },
-      );
+      try {
+        var response = await http.delete(
+          Uri.parse(deleteUrl),
+          headers: headers,
+        );
 
-      if (response.statusCode == 200) {
-        // 댓글 작성 성공 시
-        print("댓글 작성 성공");
-        // 이전 화면으로 이동 또는 다른 작업 수행
-        Get.offNamed('/postDetail', arguments: postId.toString());
-        fetchPostData();
-      } else {
-        print(postId);
-        print(response.statusCode);
-        // 댓글 작성 실패 시
-        print("댓글 작성 실패");
-        // 실패 메시지를 표시하거나 사용자에게 알림
+        if (response.statusCode == 200) {
+          print("댓글 삭제 성공");
+          fetchPostData();
+        } else {
+          print("댓글 삭제 실패: ${response.statusCode}");
+        }
+      } catch (e) {
+        print("오류 발생: $e");
       }
-    } catch (e) {
-      print("오류 발생: $e");
-      // 오류 처리
     }
   }
 
@@ -360,7 +398,7 @@ class PostDetailPageState extends State<PostDetailPage> {
                   icon: Icon(Icons.delete),
                   onPressed: () {
                     String postId = Get.arguments;
-                    deletePost(postId);
+                    deletePost(context, postId);
                   },
                 ),
             ],
@@ -429,43 +467,39 @@ class PostDetailPageState extends State<PostDetailPage> {
                   child: ListView.builder(
                     itemCount: comments.length,
                     itemBuilder: (_, index) {
+                      final comment = comments[index];
+                      final commentId = comment['id'];
                       return ListTile(
                         contentPadding: EdgeInsets.symmetric(horizontal: 3.0),
                         title: Row(
                           children: [
                             Expanded(
                               child: Text(
-                                comments[index]['author']['username'],
+                                comment['author']['username'],
                                 style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
                                     color: Colors.black54),
                               ),
                             ),
-                            if (isCommentAuthorVerified(
-                                comments[index]['author']['username'],
-                                tokenUsername))
-                              IconButton(
-                                icon: Icon(
-                                  Icons.edit,
-                                  size: 20,
-                                ),
-                                onPressed: () {
-                                  // 수정 기능 구현
-                                },
-                                padding: EdgeInsets.zero, // 아이콘 버튼 패딩 조정
-                                constraints: BoxConstraints(),
+                            IconButton(
+                              icon: Icon(
+                                Icons.favorite_border,
+                                size: 20,
                               ),
+                              onPressed: () {
+                                // 좋아요 기능 구현
+                              },
+                            ),
                             if (isCommentAuthorVerified(
-                                comments[index]['author']['username'],
-                                tokenUsername))
+                                comment['author']['username'], tokenUsername))
                               IconButton(
                                 icon: Icon(
                                   Icons.delete,
                                   size: 20,
                                 ),
                                 onPressed: () {
-                                  // 삭제 기능 구현
+                                  deleteComment(context, commentId.toString());
                                 },
                                 padding: EdgeInsets.zero, // 아이콘 버튼 패딩 조정
                                 constraints: BoxConstraints(),
@@ -476,19 +510,13 @@ class PostDetailPageState extends State<PostDetailPage> {
                           children: [
                             Expanded(
                               child: Text(
-                                comments[index]['comment'],
+                                comment['comment'],
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w400,
                                   color: Colors.black87,
                                 ),
                               ),
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.favorite_border),
-                              onPressed: () {
-                                // 좋아요 기능 구현
-                              },
                             ),
                           ],
                         ),
