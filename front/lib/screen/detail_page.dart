@@ -33,6 +33,7 @@ class PostDetailPageState extends State<PostDetailPage> {
   String createDate = "";
   int likeCount = 0;
   bool isLiked = false;
+  bool isCommentLiked = false;
   String tokenUsername = "";
   List<Map<String, dynamic>> comments = [];
 
@@ -111,7 +112,7 @@ class PostDetailPageState extends State<PostDetailPage> {
       if (response.statusCode == 200) {
         setState(() {
           isLiked = !isLiked;
-          likeCount += isLiked ? 1 : -1;
+          fetchPostData();
         });
       } else {
         print("Failed to toggle like, status code: ${response.statusCode}");
@@ -180,6 +181,39 @@ class PostDetailPageState extends State<PostDetailPage> {
         // 오류 발생 시 처리
         print("오류 발생: $e");
       }
+    }
+  }
+
+  Future<void> likeComment(BuildContext context, String commentId) async {
+    // 수정해야함
+    String? token = await storage.read(key: 'accessToken');
+    if (token == null) {
+      print('Token is null');
+      return;
+    }
+
+    String serverUri = dotenv.env['SERVER_URI']!;
+    String likeEndpoint = dotenv.env['COMMENT_LIKE_ENDPOINT']!;
+    String likeCommentUrl = "$serverUri$likeEndpoint/$commentId";
+
+    Map<String, String> headers = {
+      'Authorization': '$token',
+    };
+
+    try {
+      final response =
+          await http.post(Uri.parse(likeCommentUrl), headers: headers);
+
+      if (response.statusCode == 200) {
+        setState(() {
+          isCommentLiked = !isCommentLiked;
+          fetchPostData();
+        });
+      } else {
+        print("Failed to toggle like, status code: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error toggling like: $e");
     }
   }
 
@@ -482,13 +516,17 @@ class PostDetailPageState extends State<PostDetailPage> {
                                     color: Colors.black54),
                               ),
                             ),
+                            Text(comment['likeCount'].toString()),
                             IconButton(
                               icon: Icon(
-                                Icons.favorite_border,
+                                isCommentLiked
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color: isCommentLiked ? Colors.red : null,
                                 size: 20,
                               ),
                               onPressed: () {
-                                // 좋아요 기능 구현
+                                likeComment(context, commentId.toString());
                               },
                             ),
                             if (isCommentAuthorVerified(
