@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:front/screen/calendar/meeting_provider.dart';
+import 'package:front/screen/schedule_page.dart';
 import 'package:get/get.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
@@ -66,7 +67,9 @@ class MyApp extends StatelessWidget {
             name: '/postEdit',
             page: () => EditPostPage(),
           ),
-          GetPage(name: '/calendar', page: () => CalendarWidget()),
+          GetPage(name: '/schedule', 
+          page: () => ScheduleWidget()
+          ),
         ],
         debugShowCheckedModeBanner: false,
         home: Login(),
