@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:front/screen/calendar/meeting_provider.dart';
+import 'package:front/screen/schedule_page.dart';
 import 'package:get/get.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
@@ -25,23 +26,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (context) => MeetingProvider(),
-        ),
-      ],
-      child: GetMaterialApp(
-        // 달력에서 한글을 출력하기 위한 코드들
-        localizationsDelegates: [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: [
-          const Locale('ko', 'KR'),
-        ],
-        locale: const Locale('ko', 'KR'),
+    return GetMaterialApp(
         // get 라우팅
         getPages: [
           GetPage(name: '/home', page: () => Home()),
@@ -66,11 +51,12 @@ class MyApp extends StatelessWidget {
             name: '/postEdit',
             page: () => EditPostPage(),
           ),
-          GetPage(name: '/calendar', page: () => CalendarWidget()),
+          GetPage(name: '/schedule', 
+          page: () => ScheduleWidget()
+          ),
         ],
         debugShowCheckedModeBanner: false,
         home: Login(),
-      ),
     );
   }
 }

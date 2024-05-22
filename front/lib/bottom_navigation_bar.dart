@@ -15,7 +15,7 @@ class BottomNavController extends GetxController {
         Get.toNamed('/home');
         break;
       case 1:
-        Get.toNamed('/calendar');
+        Get.toNamed('/schedule');
         break;
       case 2:
         Get.toNamed('/postList');
