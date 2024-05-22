@@ -26,23 +26,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (context) => MeetingProvider(),
-        ),
-      ],
-      child: GetMaterialApp(
-        // 달력에서 한글을 출력하기 위한 코드들
-        localizationsDelegates: [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: [
-          const Locale('ko', 'KR'),
-        ],
-        locale: const Locale('ko', 'KR'),
+    return GetMaterialApp(
         // get 라우팅
         getPages: [
           GetPage(name: '/home', page: () => Home()),
@@ -73,7 +57,6 @@ class MyApp extends StatelessWidget {
         ],
         debugShowCheckedModeBanner: false,
         home: Login(),
-      ),
     );
   }
 }

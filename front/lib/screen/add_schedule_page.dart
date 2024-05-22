@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -52,7 +53,7 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
               titleCentered: true,
               formatButtonVisible: false,
             ),
-            locale: 'ko_kR',
+            // locale: 'ko_kR',
             firstDay: DateTime.utc(2020, 1, 1),
             lastDay: DateTime.utc(2030, 12, 31),
             focusedDay: _focusedDay,
