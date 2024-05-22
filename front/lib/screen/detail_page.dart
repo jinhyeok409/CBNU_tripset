@@ -41,6 +41,11 @@ class PostDetailPageState extends State<PostDetailPage> {
     return username == tokenUsername;
   }
 
+  bool isCommentAuthorVerified(String commentUsername, String tokenUsername) {
+    // username과 tokenUsername을 비교하여 일치 여부를 확인하고 true 또는 false 반환
+    return commentUsername == tokenUsername;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -437,28 +442,34 @@ class PostDetailPageState extends State<PostDetailPage> {
                                     color: Colors.black54),
                               ),
                             ),
-                            IconButton(
-                              icon: Icon(
-                                Icons.edit,
-                                size: 20,
+                            if (isCommentAuthorVerified(
+                                comments[index]['author']['username'],
+                                tokenUsername))
+                              IconButton(
+                                icon: Icon(
+                                  Icons.edit,
+                                  size: 20,
+                                ),
+                                onPressed: () {
+                                  // 수정 기능 구현
+                                },
+                                padding: EdgeInsets.zero, // 아이콘 버튼 패딩 조정
+                                constraints: BoxConstraints(),
                               ),
-                              onPressed: () {
-                                // 수정 기능 구현
-                              },
-                              padding: EdgeInsets.zero, // 아이콘 버튼 패딩 조정
-                              constraints: BoxConstraints(),
-                            ),
-                            IconButton(
-                              icon: Icon(
-                                Icons.delete,
-                                size: 20,
-                              ),
-                              onPressed: () {
-                                // 삭제 기능 구현
-                              },
-                              padding: EdgeInsets.zero, // 아이콘 버튼 패딩 조정
-                              constraints: BoxConstraints(),
-                            )
+                            if (isCommentAuthorVerified(
+                                comments[index]['author']['username'],
+                                tokenUsername))
+                              IconButton(
+                                icon: Icon(
+                                  Icons.delete,
+                                  size: 20,
+                                ),
+                                onPressed: () {
+                                  // 삭제 기능 구현
+                                },
+                                padding: EdgeInsets.zero, // 아이콘 버튼 패딩 조정
+                                constraints: BoxConstraints(),
+                              )
                           ],
                         ),
                         subtitle: Row(
