@@ -212,6 +212,107 @@ class PostDetailPageState extends State<PostDetailPage> {
     }
   }
 
+  Future<void> modifyComment(BuildContext context) async {
+    String? token = await storage.read(key: 'accessToken');
+    String serverUri = dotenv.env['SERVER_URI']!;
+    String modifyEndpoint = dotenv.env['COMMENT_MODIFY_ENDPOINT']!;
+    String postId = Get.arguments;
+    String comment = _commentController.text;
+
+    Map<String, String> headers = {
+      'Authorization': '$token', // 토큰 값 추가
+    };
+
+    try {
+      String createCommentUrl = "$serverUri$modifyEndpoint/$postId";
+      if (comment.isEmpty) {
+        Get.dialog(
+          AlertDialog(
+            title: Text('경고'),
+            content: Text('내용을 입력해주세요.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  // Get 패키지의 dialog 메서드를 사용하여 다이얼로그를 닫습니다.
+                  Get.back();
+                },
+                child: Text('확인'),
+              ),
+            ],
+          ),
+        );
+      } else {
+        // HTTP POST 요청 보내기
+        var response = await http.post(
+          Uri.parse(createCommentUrl),
+          headers: headers,
+          body: {
+            'comment': comment,
+          },
+        );
+
+        if (response.statusCode == 200) {
+          // 댓글 작성 성공 시
+          print("댓글 작성 성공");
+          // 이전 화면으로 이동 또는 다른 작업 수행
+          Get.offNamed('/postDetail', arguments: postId.toString());
+          fetchPostData();
+        } else {
+          print(postId);
+          print(response.statusCode);
+          // 댓글 작성 실패 시
+          print("댓글 작성 실패");
+          // 실패 메시지를 표시하거나 사용자에게 알림
+        }
+      }
+    } catch (e) {
+      print("오류 발생: $e");
+      // 오류 처리
+    }
+  }
+
+  Future<void> deleteComment(BuildContext context) async {
+    String? token = await storage.read(key: 'accessToken');
+    String serverUri = dotenv.env['SERVER_URI']!;
+    String deleteEndpoint = dotenv.env['COMMENT_DELETE_ENDPOINT']!;
+    String postId = Get.arguments;
+    String comment = _commentController.text;
+
+    Map<String, String> headers = {
+      'Authorization': '$token', // 토큰 값 추가
+    };
+
+    try {
+      String createCommentUrl = "$serverUri$deleteEndpoint/$postId";
+
+      // HTTP POST 요청 보내기
+      var response = await http.post(
+        Uri.parse(createCommentUrl),
+        headers: headers,
+        body: {
+          'comment': comment,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // 댓글 작성 성공 시
+        print("댓글 작성 성공");
+        // 이전 화면으로 이동 또는 다른 작업 수행
+        Get.offNamed('/postDetail', arguments: postId.toString());
+        fetchPostData();
+      } else {
+        print(postId);
+        print(response.statusCode);
+        // 댓글 작성 실패 시
+        print("댓글 작성 실패");
+        // 실패 메시지를 표시하거나 사용자에게 알림
+      }
+    } catch (e) {
+      print("오류 발생: $e");
+      // 오류 처리
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -311,7 +412,7 @@ class PostDetailPageState extends State<PostDetailPage> {
                     IconButton(
                       icon: Icon(
                         isLiked ? Icons.favorite : Icons.favorite_border,
-                        color: isLiked ? Colors.red : null,
+                        color: isLiked ? Colors.red : null, // 조건에 따라 색상 설정
                       ),
                       onPressed: () {
                         postLike();
@@ -325,28 +426,57 @@ class PostDetailPageState extends State<PostDetailPage> {
                     itemBuilder: (_, index) {
                       return ListTile(
                         contentPadding: EdgeInsets.symmetric(horizontal: 3.0),
-                        title: Text(
-                          comments[index]['author']['username'],
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black54),
+                        title: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                comments[index]['author']['username'],
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black54),
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(
+                                Icons.edit,
+                                size: 20,
+                              ),
+                              onPressed: () {
+                                // 수정 기능 구현
+                              },
+                              padding: EdgeInsets.zero, // 아이콘 버튼 패딩 조정
+                              constraints: BoxConstraints(),
+                            ),
+                            IconButton(
+                              icon: Icon(
+                                Icons.delete,
+                                size: 20,
+                              ),
+                              onPressed: () {
+                                // 삭제 기능 구현
+                              },
+                              padding: EdgeInsets.zero, // 아이콘 버튼 패딩 조정
+                              constraints: BoxConstraints(),
+                            )
+                          ],
                         ),
                         subtitle: Row(
                           children: [
-                            Text(
-                              comments[index]['comment'],
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black87,
+                            Expanded(
+                              child: Text(
+                                comments[index]['comment'],
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.black87,
+                                ),
                               ),
                             ),
-                            Spacer(),
                             IconButton(
                               icon: Icon(Icons.favorite_border),
                               onPressed: () {
-                                // 좋아요 기능 추후 구현
+                                // 좋아요 기능 구현
                               },
                             ),
                           ],
