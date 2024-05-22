@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:front/bottom_navigation_bar.dart';
+import 'package:front/screen/add_schedule_page.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -45,7 +46,8 @@ class _ScheduleWidget extends State<ScheduleWidget> {
                 const SizedBox(height: 16), // 텍스트와 버튼 사이의 간격
                 ElevatedButton(
                   onPressed: () {
-                    // 일정 추가 버튼 클릭 시 동작 추가
+                    // 일정 추가 버튼 클릭 시 동작
+                    Get.to(AddScheduleWidget());
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
