@@ -414,7 +414,7 @@ class PostDetailPageState extends State<PostDetailPage> {
                 //Get.back();
                 // 뒤로가기
                 Get.find<PostListScrollController>().reload();
-                Get.offNamed('/root');
+                Get.offAllNamed('/root');
                 //Navigator.pushReplacementNamed(context, '/Root');
               },
             ),

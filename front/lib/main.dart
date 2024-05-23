@@ -75,7 +75,7 @@ class MyApp extends StatelessWidget {
 class AppBinding extends Bindings {
   @override
   void dependencies() {
-    Get.put(PostListScrollController());
+    Get.put(PostListScrollController(), permanent: true);
     Get.put(BottomNavController());
   }
 }
