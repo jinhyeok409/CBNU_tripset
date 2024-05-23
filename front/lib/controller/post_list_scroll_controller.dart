@@ -8,7 +8,7 @@ import '../model/post.dart';
 class PostListScrollController extends GetxController {
   static PostListScrollController get instance => Get.find();
 
-  final scrollController = ScrollController();
+  var scrollController = ScrollController().obs;
   var posts = <Post>[].obs;
   var isLoading = false.obs;
   var hasMore = false.obs;
@@ -18,12 +18,11 @@ class PostListScrollController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    print('init controller');
     _getData(category: currentCategory.value);
-    scrollController.addListener(() {
+    scrollController.value.addListener(() {
       try {
-        if (scrollController.position.pixels ==
-                scrollController.position.maxScrollExtent &&
+        if (scrollController.value.position.pixels ==
+                scrollController.value.position.maxScrollExtent &&
             hasMore.value) {
           _getData(category: currentCategory.value);
         }
@@ -34,14 +33,9 @@ class PostListScrollController extends GetxController {
   }
 
   @override
-  void dispose() {
-    scrollController.dispose();
-    super.dispose();
-  }
-
-  @override
   void onClose() {
-    scrollController.dispose();
+    print('onClose');
+    scrollController.value.dispose();
     super.onClose();
   }
 
@@ -76,8 +70,10 @@ class PostListScrollController extends GetxController {
         posts.addAll(fetchedPosts);
         nextLink.value = jsonData['nextLink'];
         hasMore.value = fetchedPosts.length == 10;
+      } else if (response.statusCode == 404) {
+        hasMore.value = false;
       } else {
-        print('Failed to load data');
+        print('Failed to load data. Status code : ${response.statusCode}');
       }
     } catch (e) {
       print('Error: $e');
@@ -86,13 +82,13 @@ class PostListScrollController extends GetxController {
     isLoading.value = false;
   }
 
-  reload({String? category}) async {
+  reload() async {
     if (isLoading.value) return;
 
     isLoading.value = true;
     posts.clear();
     nextLink.value = '';
-    currentCategory.value = category ?? 'ALL';
+    //urrentCategory.value = category ?? 'ALL';
 
     print(currentCategory);
     isLoading.value = false;

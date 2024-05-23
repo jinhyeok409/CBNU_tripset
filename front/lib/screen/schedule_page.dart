@@ -55,18 +55,18 @@ class _ScheduleWidget extends State<ScheduleWidget> {
                   child: Text(
                     "새로운 일정 만들기",
                     style: TextStyle(color: Colors.white),
-                    ),
+                  ),
                 ),
               ],
             ),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: GetBuilder<BottomNavController>(
-              init: BottomNavController(),
-              builder: (controller) => BottomNavBar(),
-            ),
-          ),
+          // Align(
+          //   alignment: Alignment.bottomCenter,
+          //   child: GetBuilder<BottomNavController>(
+          //     init: BottomNavController(),
+          //     builder: (controller) => BottomNavBar(),
+          //   ),
+          // ),
         ],
       ),
     );

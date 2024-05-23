@@ -177,13 +177,13 @@ class Home extends StatelessWidget {
           ),
 
           // bottomNavigaitionBar
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: GetBuilder<BottomNavController>(
-              init: BottomNavController(),
-              builder: (controller) => BottomNavBar(),
-            ),
-          ),
+          // Align(
+          //   alignment: Alignment.bottomCenter,
+          //   child: GetBuilder<BottomNavController>(
+          //     init: BottomNavController(),
+          //     builder: (controller) => BottomNavBar(),
+          //   ),
+          // ),
         ]),
       ),
     );

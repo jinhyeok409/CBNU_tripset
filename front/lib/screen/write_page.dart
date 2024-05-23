@@ -6,6 +6,7 @@ import 'package:front/screen/post_list.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../controller/post_list_scroll_controller.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -22,7 +23,8 @@ class PostPage extends StatefulWidget {
 class PostPageState extends State<PostPage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
-  String _selectedCategory = 'FREE'; // Default category
+  String _selectedCategory =
+      Get.find<PostListScrollController>().currentCategory.value;
 
   final storage = FlutterSecureStorage();
 
@@ -66,6 +68,7 @@ class PostPageState extends State<PostPage> {
                 print('back to Postlist');
                 //Get.to(PostList());
                 Get.back();
+                //Get.offNamed('postList');
               },
             ),
           ),

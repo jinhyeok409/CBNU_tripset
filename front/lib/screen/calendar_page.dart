@@ -32,11 +32,9 @@ class _CalendarWidgetState extends State<CalendarWidget> {
 
     getMeeting() async {
       String? token = await storage.read(key: 'accessToken');
-      final response = await http.get(
-        Uri.parse(apiUrl),
-        headers: {'Authorization' : '$token'}
-        );
-      if(response.statusCode == 200){
+      final response = await http
+          .get(Uri.parse(apiUrl), headers: {'Authorization': '$token'});
+      if (response.statusCode == 200) {
         print(json.decode(utf8.decode(response.bodyBytes)));
       }
     }
@@ -48,16 +46,18 @@ class _CalendarWidgetState extends State<CalendarWidget> {
       appBar: AppBar(
         title: const Text("📅 My Plan"),
         actions: [
-          IconButton(onPressed: () {
-            provider.addMeeting();
-          }, 
-          icon: const Icon(Icons.add),
+          IconButton(
+            onPressed: () {
+              provider.addMeeting();
+            },
+            icon: const Icon(Icons.add),
           ),
-          IconButton(onPressed: () {
-            // provider.editMeeting(1);
-          },
-           icon: const Icon(Icons.edit),
-           ),
+          IconButton(
+            onPressed: () {
+              // provider.editMeeting(1);
+            },
+            icon: const Icon(Icons.edit),
+          ),
         ],
       ),
       body: Stack(
@@ -67,9 +67,30 @@ class _CalendarWidgetState extends State<CalendarWidget> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  OutlinedButton(onPressed: () { setState(() {calendarView = CalendarView.month; calendarController.view = calendarView;}); }, child: Text("월간")),
-                  OutlinedButton(onPressed: () { setState(() {calendarView = CalendarView.week; calendarController.view = calendarView;}); }, child: Text("주간")),
-                  OutlinedButton(onPressed: () { setState(() {calendarView = CalendarView.day; calendarController.view = calendarView;}); }, child: Text("일간")),
+                  OutlinedButton(
+                      onPressed: () {
+                        setState(() {
+                          calendarView = CalendarView.month;
+                          calendarController.view = calendarView;
+                        });
+                      },
+                      child: Text("월간")),
+                  OutlinedButton(
+                      onPressed: () {
+                        setState(() {
+                          calendarView = CalendarView.week;
+                          calendarController.view = calendarView;
+                        });
+                      },
+                      child: Text("주간")),
+                  OutlinedButton(
+                      onPressed: () {
+                        setState(() {
+                          calendarView = CalendarView.day;
+                          calendarController.view = calendarView;
+                        });
+                      },
+                      child: Text("일간")),
                 ],
               ),
               // SizedBox(height: 16), // 위젯 간 간격 추가
@@ -89,7 +110,8 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                     shape: BoxShape.rectangle,
                   ),
                   monthViewSettings: MonthViewSettings(
-                    appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
+                    appointmentDisplayMode:
+                        MonthAppointmentDisplayMode.appointment,
                     showAgenda: true,
                   ),
                   blackoutDates: [
@@ -101,13 +123,13 @@ class _CalendarWidgetState extends State<CalendarWidget> {
               ),
             ],
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: GetBuilder<BottomNavController>(
-              init: BottomNavController(),
-              builder: (controller) => BottomNavBar(),
-            ),
-          ),
+          // Align(
+          //   alignment: Alignment.bottomCenter,
+          //   child: GetBuilder<BottomNavController>(
+          //     init: BottomNavController(),
+          //     builder: (controller) => BottomNavBar(),
+          //   ),
+          // ),
         ],
       ),
     );
