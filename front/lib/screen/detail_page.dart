@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:front/controller/post_list_scroll_controller.dart';
 import 'package:front/screen/login.dart';
 import 'package:front/screen/post_list.dart';
 import 'package:http/http.dart' as http;
@@ -171,7 +172,9 @@ class PostDetailPageState extends State<PostDetailPage> {
           // 삭제 성공 시
           print("게시물 삭제 성공");
           // 이전 화면으로 이동 또는 다른 작업 수행
-          Get.offNamed('/postList');
+          //Get.offNamed('/postList');
+          Get.find<PostListScrollController>().reload();
+          Get.offNamed('/root');
         } else {
           // 삭제 실패 시
           print("게시물 삭제 실패: ${response.statusCode}");
@@ -408,8 +411,11 @@ class PostDetailPageState extends State<PostDetailPage> {
               icon: Icon(Icons.arrow_back),
               onPressed: () {
                 //Get.off(() => PostList());
-                Get.back();
+                //Get.back();
                 // 뒤로가기
+                Get.find<PostListScrollController>().reload();
+                Get.offNamed('/root');
+                //Navigator.pushReplacementNamed(context, '/Root');
               },
             ),
             actions: [
@@ -607,7 +613,8 @@ class EditPostPage extends StatefulWidget {
 class _EditPostPageState extends State<EditPostPage> {
   late TextEditingController _posttitleController;
   late TextEditingController _postcontentController;
-  String _selectedCategory = 'FREE';
+  String _selectedCategory =
+      Get.find<PostListScrollController>().currentCategory.value;
   late String _postId;
 
   @override
