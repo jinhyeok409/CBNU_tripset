@@ -20,19 +20,7 @@ class Root extends GetView<BottomNavController> {
               // ChatPage(), // 채팅 추후 구현
             ],
           )),
-      bottomNavigationBar:
-          // BottomNavigationBar(
-          //   currentIndex: controller.selectedIndex.value,
-          //   onTap: controller.changeTabIndex,
-          //   items: [
-          //     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          //     BottomNavigationBarItem(
-          //         icon: Icon(Icons.calendar_today), label: "Calendar"),
-          //     BottomNavigationBarItem(icon: Icon(Icons.list), label: "Posts"),
-          //     // BottomNavigationBarItem(icon: Icon(Icons.chat), label: "Chat"), // 채팅 추후 구현
-          //   ],
-          // ),
-          BottomNavBar(),
+      bottomNavigationBar: BottomNavBar(),
     );
   }
 }
