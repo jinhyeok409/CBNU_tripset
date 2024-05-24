@@ -24,7 +24,9 @@ class PostPageState extends State<PostPage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
   String _selectedCategory =
-      Get.find<PostListScrollController>().currentCategory.value;
+      Get.find<PostListScrollController>().currentCategory.value != 'PLAN'
+          ? 'FREE'
+          : Get.find<PostListScrollController>().currentCategory.value;
 
   final storage = FlutterSecureStorage();
 
