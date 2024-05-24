@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:front/screen/calendar_page.dart';
 import 'package:get/get.dart';
 import 'screen/home.dart';
 import 'screen/post_list.dart';
