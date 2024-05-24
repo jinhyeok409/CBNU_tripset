@@ -3,6 +3,7 @@ import 'package:front/bottom_navigation_bar.dart';
 import 'package:front/screen/schedule_page.dart';
 import 'package:front/screen/home.dart';
 import 'package:front/screen/post_list.dart';
+import 'package:front/screen/chat_list_page.dart';
 import 'package:get/get.dart';
 
 class Root extends GetView<BottomNavController> {
@@ -17,7 +18,7 @@ class Root extends GetView<BottomNavController> {
               Home(),
               ScheduleWidget(),
               PostList(),
-              // ChatPage(), // 채팅 추후 구현
+              ChatListPage() // 채팅 추후 구현
             ],
           )),
       bottomNavigationBar: BottomNavBar(),
