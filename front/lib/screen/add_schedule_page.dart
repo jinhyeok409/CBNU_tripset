@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:front/screen/detail_schedule_page.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -53,7 +54,7 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
               titleCentered: true,
               formatButtonVisible: false,
             ),
-            // locale: 'ko_kR',
+            // locale: 'ko_KR',
             firstDay: DateTime.utc(2020, 1, 1),
             lastDay: DateTime.utc(2030, 12, 31),
             focusedDay: _focusedDay,
@@ -86,29 +87,36 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
             margin: EdgeInsets.all(50),
             child: ElevatedButton(
               onPressed: () {
-                  if(textEditingController.text.isEmpty || _rangeStart == null || _rangeEnd == null) {
+                if (textEditingController.text.isEmpty || _rangeStart == null || _rangeEnd == null) {
                   Get.dialog(
-                      AlertDialog(
-                        title: Text('🤔'),
-                        content: Text('일정 제목 혹은 날짜 입력을 잊지는 않으셨나요?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              // Get 패키지의 dialog 메서드를 사용하여 다이얼로그를 닫습니다.
-                              Get.back();
-                            },
-                            child: Text('확인'),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                },
+                    AlertDialog(
+                      title: Text('🤔'),
+                      content: Text('일정 제목 혹은 날짜 입력을 잊지는 않으셨나요?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            // Get 패키지의 dialog 메서드를 사용하여 다이얼로그를 닫습니다.
+                            Get.back();
+                          },
+                          child: Text('확인'),
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  // 세부 일정 페이지로 이동
+                  Get.to(() => DetailScheduleWidget(
+                    rangeStart: _rangeStart!,
+                    rangeEnd: _rangeEnd!,
+                    title: textEditingController.text,
+                  ));
+                }
+              },
               child: Icon(
                 Icons.navigate_next_rounded,
                 color: Colors.blue,
-              )
               ),
+            ),
           ),
         ],
       ),
