@@ -12,16 +12,41 @@ class ChatRoomPage extends StatefulWidget {
 }
 
 class _ChatRoomPageState extends State<ChatRoomPage> {
-  List<String> messages = [];
+  List<Map<String, String>> messages = [];
   TextEditingController messageController = TextEditingController();
+  ScrollController scrollController = ScrollController();
 
   void sendMessage() {
     if (messageController.text.trim().isNotEmpty) {
       setState(() {
-        messages.add(messageController.text.trim());
+        messages.add({
+          'sender': 'Me',
+          'message': messageController.text.trim(),
+        });
         messageController.clear();
       });
+      scrollToRecentMessage();
     }
+  }
+
+  void scrollToRecentMessage() {
+    if (scrollController.hasClients) {
+      scrollController.animateTo(
+        scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
+  void receiveMessage(String sender, String message) {
+    setState(() {
+      messages.add({
+        'sender': sender,
+        'message': message,
+      });
+    });
+    scrollToRecentMessage();
   }
 
   void dismissKeyboard() {
@@ -40,10 +65,44 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
           children: [
             Expanded(
               child: ListView.builder(
+                controller: scrollController,
                 itemCount: messages.length,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(messages[index]),
+                  bool isMe = messages[index]['sender'] == 'Me';
+                  return Align(
+                    alignment:
+                        isMe ? Alignment.centerRight : Alignment.centerLeft,
+                    child: Column(
+                      crossAxisAlignment: isMe
+                          ? CrossAxisAlignment.end
+                          : CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            messages[index]['sender']!,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(12.0),
+                          decoration: BoxDecoration(
+                            color: isMe ? Colors.blue : Colors.grey[300],
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          child: Text(
+                            messages[index]['message']!,
+                            style: TextStyle(
+                              color: isMe ? Colors.white : Colors.black,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   );
                 },
               ),
