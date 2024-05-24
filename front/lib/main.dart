@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:front/bottom_navigation_bar.dart';
-import 'package:front/screen/calendar/meeting_provider.dart';
 import 'package:front/screen/schedule_page.dart';
 import 'package:front/screen/root.dart';
 import 'package:get/get.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:provider/provider.dart';
 import 'controller/post_list_scroll_controller.dart';
 import 'screen/home.dart';
 import 'screen/login.dart';
 import 'screen/register.dart';
-import 'screen/calendar_page.dart';
 import 'screen/post_list.dart';
 import 'screen/detail_page.dart';
 import 'screen/write_page.dart';
