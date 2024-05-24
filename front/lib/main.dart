@@ -15,6 +15,7 @@ import 'screen/calendar_page.dart';
 import 'screen/post_list.dart';
 import 'screen/detail_page.dart';
 import 'screen/write_page.dart';
+import 'screen/chat_list_page.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -57,6 +58,7 @@ class MyApp extends StatelessWidget {
           page: () => EditPostPage(),
         ),
         GetPage(name: '/schedule', page: () => ScheduleWidget()),
+        GetPage(name: '/chatRoomList', page: () => ChatListPage()),
       ],
       // 컨트롤러 바인딩
       initialBinding: AppBinding(),
