@@ -49,6 +49,7 @@ class LoginState extends State<Login> {
           if (token != null) {
             await storage.write(key: 'accessToken', value: token);
             print('Login successful.');
+            print(token);
             //Get.toNamed('/home');
             Get.offNamed('/root');
           }
