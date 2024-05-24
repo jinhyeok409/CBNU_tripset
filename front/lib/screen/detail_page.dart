@@ -174,7 +174,7 @@ class PostDetailPageState extends State<PostDetailPage> {
           // 이전 화면으로 이동 또는 다른 작업 수행
           //Get.offNamed('/postList');
           Get.find<PostListScrollController>().reload();
-          Get.offNamed('/root');
+          Get.offAllNamed('/root');
         } else {
           // 삭제 실패 시
           print("게시물 삭제 실패: ${response.statusCode}");
