@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:front/screen/home.dart';
+import 'package:front/screen/root.dart';
 import 'package:get/get.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart'; // 암호화 저장 토큰저장시 씀
 import 'package:flutter/cupertino.dart';
@@ -48,7 +49,8 @@ class LoginState extends State<Login> {
           if (token != null) {
             await storage.write(key: 'accessToken', value: token);
             print('Login successful.');
-            Get.to(Home());
+            //Get.toNamed('/home');
+            Get.offNamed('/root');
           }
         } else {
           print('login failed');
@@ -231,11 +233,7 @@ class LoginState extends State<Login> {
                         ),
                         InkWell(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Register()),
-                            );
+                            Get.toNamed('/register');
                           },
                           child: Text(
                             "Don't have Account?",

@@ -6,6 +6,8 @@ import 'dart:convert';
 import '../model/post.dart';
 
 class PostListScrollController extends GetxController {
+  static PostListScrollController get instance => Get.find();
+
   var scrollController = ScrollController().obs;
   var posts = <Post>[].obs;
   var isLoading = false.obs;
@@ -15,16 +17,26 @@ class PostListScrollController extends GetxController {
 
   @override
   void onInit() {
-    print('init controller');
+    super.onInit();
     _getData(category: currentCategory.value);
     scrollController.value.addListener(() {
-      if (scrollController.value.position.pixels ==
-              scrollController.value.position.maxScrollExtent &&
-          hasMore.value) {
-        _getData(category: currentCategory.value);
+      try {
+        if (scrollController.value.position.pixels ==
+                scrollController.value.position.maxScrollExtent &&
+            hasMore.value) {
+          _getData(category: currentCategory.value);
+        }
+      } catch (e) {
+        print('Error in scrollController listener: $e');
       }
     });
-    super.onInit();
+  }
+
+  @override
+  void onClose() {
+    print('onClose');
+    scrollController.value.dispose();
+    super.onClose();
   }
 
   _getData({String? category}) async {
@@ -58,8 +70,10 @@ class PostListScrollController extends GetxController {
         posts.addAll(fetchedPosts);
         nextLink.value = jsonData['nextLink'];
         hasMore.value = fetchedPosts.length == 10;
+      } else if (response.statusCode == 404) {
+        hasMore.value = false;
       } else {
-        print('Failed to load data');
+        print('Failed to load data. Status code : ${response.statusCode}');
       }
     } catch (e) {
       print('Error: $e');
@@ -68,12 +82,13 @@ class PostListScrollController extends GetxController {
     isLoading.value = false;
   }
 
-  reload({String? category}) async {
+  reload() async {
     if (isLoading.value) return;
 
     isLoading.value = true;
     posts.clear();
-    //currentCategory.value = category ?? 'ALL';
+    nextLink.value = '';
+    //urrentCategory.value = category ?? 'ALL';
 
     print(currentCategory);
     isLoading.value = false;

@@ -34,7 +34,7 @@ class RegisterState extends State<Register> {
         if (response.statusCode == 200) {
           print('create account');
           print(response.body);
-          Get.to(Login());
+          Get.toNamed('/login');
         } else {
           print(response.statusCode);
           print('fail');
