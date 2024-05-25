@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'place_search_page.dart';
+import 'package:google_place/google_place.dart';
 
 class DetailScheduleWidget extends StatefulWidget {
   final DateTime rangeStart;
@@ -15,14 +17,14 @@ class DetailScheduleWidget extends StatefulWidget {
 class _DetailScheduleWidgetState extends State<DetailScheduleWidget> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late List<DateTime> _days;
-  late List<List<TimeOfDay?>> _schedules; // 변경된 부분
+  late List<List<Schedule>> _schedules;
 
   @override
   void initState() {
     super.initState();
     _initializeDays();
     _tabController = TabController(length: _days.length, vsync: this);
-    _schedules = List.generate(_days.length, (_) => [null]); // 변경된 부분
+    _schedules = List.generate(_days.length, (_) => [Schedule()]);
   }
 
   void _initializeDays() {
@@ -47,15 +49,31 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget> with Single
     );
     if (picked != null) {
       setState(() {
-        _schedules[dayIndex][scheduleIndex] = picked;
+        _schedules[dayIndex][scheduleIndex].time = picked;
       });
     }
   }
 
   void _addSchedule(int dayIndex) {
     setState(() {
-      _schedules[dayIndex].add(null);
+      _schedules[dayIndex].add(Schedule());
     });
+  }
+
+  Future<void> _pickLocation(int dayIndex, int scheduleIndex) async {
+    final place = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PlaceSearchScreen(),
+      ),
+    );
+
+    if (place != null) {
+      setState(() {
+        _schedules[dayIndex][scheduleIndex].location = place.formattedAddress;
+        print("새로 추가된 위치의 정보 > 위도 : ${place.geometry?.location?.lat}, 경도 : ${place.geometry?.location?.lng}");
+      });
+    }
   }
 
   @override
@@ -98,18 +116,24 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget> with Single
                   child: ListView.builder(
                     itemCount: _schedules[dayIndex].length,
                     itemBuilder: (context, scheduleIndex) {
-                      TimeOfDay? selectedTime = _schedules[dayIndex][scheduleIndex];
+                      final schedule = _schedules[dayIndex][scheduleIndex];
                       return ListTile(
-                        onTap: () => _pickTime(dayIndex, scheduleIndex), // 수정된 부분
+                        onTap: () => _pickTime(dayIndex, scheduleIndex),
                         title: Row(
                           children: [
                             Icon(Icons.access_time),
-                            Text(selectedTime != null ? selectedTime.format(context) : "시간 선택"),
+                            Text(schedule.time != null
+                                ? schedule.time!.format(context)
+                                : "시간 선택"),
                             Expanded(
                               child: TextField(
+                                readOnly: true,
                                 decoration: InputDecoration(
-                                  labelText: "위치 입력",
+                                  labelText: schedule.location != null
+                                      ? schedule.location!
+                                      : "위치 입력",
                                 ),
+                                onTap: () => _pickLocation(dayIndex, scheduleIndex),
                               ),
                             ),
                           ],
@@ -120,7 +144,7 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget> with Single
                 ),
                 TextButton(
                   onPressed: () {
-                    _addSchedule(dayIndex); // 변경된 부분
+                    _addSchedule(dayIndex);
                   },
                   child: Text("일정 추가"),
                 ),
@@ -131,4 +155,11 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget> with Single
       ),
     );
   }
+}
+
+class Schedule {
+  TimeOfDay? time;
+  String? location;
+
+  Schedule({this.time, this.location});
 }
