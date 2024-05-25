@@ -1,6 +1,6 @@
 // chat_room_page.dart (채팅방 상세 페이지)
 import 'package:flutter/material.dart';
-import '../model/chat_room.dart';
+import '../../model/chat_room.dart';
 
 class ChatRoomPage extends StatefulWidget {
   final ChatRoom chatRoom;

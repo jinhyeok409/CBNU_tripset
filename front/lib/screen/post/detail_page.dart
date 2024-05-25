@@ -3,12 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:front/controller/post_list_scroll_controller.dart';
-import 'package:front/screen/login.dart';
-import 'package:front/screen/post_list.dart';
 import 'package:http/http.dart' as http;
-import 'package:front/screen/detail_page.dart';
 import 'package:get/get.dart';
-import 'package:front/model/post.dart';
 import 'package:jwt_decoder/jwt_decoder.dart'; // 게시물 모델 임포트
 
 // 업데이트랑 삭제 부분 구현 하고 + 아이디값 적용해서 url관리
