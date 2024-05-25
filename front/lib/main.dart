@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:front/bottom_navigation_bar.dart';
-import 'package:front/screen/schedule_page.dart';
+import 'package:front/screen/schedule/schedule_page.dart';
 import 'package:front/screen/root.dart';
 import 'package:get/get.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'controller/post_list_scroll_controller.dart';
+import 'controller/like_post_list_controller.dart';
 import 'screen/home.dart';
 import 'screen/login.dart';
 import 'screen/register.dart';
-import 'screen/post_list.dart';
-import 'screen/detail_page.dart';
-import 'screen/write_page.dart';
-import 'screen/chat_list_page.dart';
+import 'screen/post/post_list.dart';
+import 'screen/post/detail_page.dart';
+import 'screen/post/write_page.dart';
+import 'screen/chat/chat_list_page.dart';
+import 'screen/post/like_post_list.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -53,6 +55,7 @@ class MyApp extends StatelessWidget {
           name: '/postEdit',
           page: () => EditPostPage(),
         ),
+        GetPage(name: '/likePostList', page: () => LikePostList()),
         GetPage(name: '/schedule', page: () => ScheduleWidget()),
         GetPage(name: '/chatRoomList', page: () => ChatListPage()),
       ],
@@ -75,5 +78,6 @@ class AppBinding extends Bindings {
   void dependencies() {
     Get.put(PostListScrollController(), permanent: true);
     Get.put(BottomNavController());
+    Get.put(LikePostListController());
   }
 }

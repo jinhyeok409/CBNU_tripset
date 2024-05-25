@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'screen/home.dart';
-import 'screen/post_list.dart';
+import 'screen/post/post_list.dart';
 
 class BottomNavController extends GetxController {
   var selectedIndex = 0.obs;
@@ -47,9 +47,9 @@ class BottomNavBar extends GetView<BottomNavController> {
         MediaQuery.of(context).size.width * 0.08; // 아이콘 크기를 화면 너비의 8%로 설정
     final double navBarHeight =
         MediaQuery.of(context).size.height * 0.1; // 하단바 높이를 화면 높이의 10%로 설정
-    final double horizontal_margin =
+    final double horizontalMargin =
         MediaQuery.of(context).size.width * 0.08; // 아이콘 간격을 화면 너비의 8%로 설정
-    final double vertical_margin =
+    final double verticalMargin =
         MediaQuery.of(context).size.width * 0.06; // 아이콘 간격을 화면 너비의 6%로 설정
     return Obx(
       () => Container(
@@ -77,8 +77,8 @@ class BottomNavBar extends GetView<BottomNavController> {
                     Container(
                       alignment: Alignment.center,
                       margin: EdgeInsets.symmetric(
-                          horizontal: horizontal_margin,
-                          vertical: vertical_margin),
+                          horizontal: horizontalMargin,
+                          vertical: verticalMargin),
                       child: Icon(
                         icon,
                         size: iconSize,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:front/bottom_navigation_bar.dart';
-import 'package:front/screen/add_schedule_page.dart';
+import 'package:front/screen/schedule/add_schedule_page.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/svg.dart';
 

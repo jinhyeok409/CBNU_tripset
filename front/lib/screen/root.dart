@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:front/bottom_navigation_bar.dart';
-import 'package:front/screen/schedule_page.dart';
+import 'package:front/screen/schedule/schedule_page.dart';
 import 'package:front/screen/home.dart';
-import 'package:front/screen/post_list.dart';
-import 'package:front/screen/chat_list_page.dart';
+import 'package:front/screen/post/post_list.dart';
+import 'package:front/screen/chat/chat_list_page.dart';
 import 'package:get/get.dart';
 
 class Root extends GetView<BottomNavController> {

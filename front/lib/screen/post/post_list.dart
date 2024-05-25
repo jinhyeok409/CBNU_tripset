@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:front/model/post.dart';
 import 'package:get/get.dart';
-import '../controller/post_list_scroll_controller.dart';
+import '../../controller/post_list_scroll_controller.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import './like_post_list.dart';
 
 class PostList extends GetView<PostListScrollController> {
   const PostList({super.key});
@@ -104,7 +105,7 @@ class PostList extends GetView<PostListScrollController> {
                             iconSize: 35,
                             color: Color(0xFF565656),
                             onPressed: () {
-                              // 좋아요 목록으로 이동 추후 구현
+                              Get.toNamed('likePostList');
                             },
                           ),
                         ],
@@ -159,8 +160,6 @@ class PostListView extends GetView<PostListScrollController> {
         );
       } else if (!controller.isLoading.value && controller.posts.isEmpty) {
         // 로딩하지 않는 중이며 불러온 게시글이 없을 때
-        print('loading: ${controller.isLoading.value}');
-        print('postEmpty: ${controller.posts.isEmpty}');
         return Center(
           child: Text('게시물이 없습니다.'),
         );
@@ -210,7 +209,7 @@ class PostListView extends GetView<PostListScrollController> {
 
                         // 댓글 개수
                         Spacer(),
-                        if (post.commentCount > 0) ...[
+                        if (post.commentCount! > 0) ...[
                           Icon(Icons.notes, size: 20, color: Color(0xFF565656)),
                           SizedBox(
                             width: 3,

@@ -1,9 +1,9 @@
 // chat_list_page.dart (채팅방 목록 페이지)
 import 'package:flutter/material.dart';
-import 'package:front/screen/chat_room_page.dart';
+import 'package:front/screen/chat/chat_room_page.dart';
 import 'package:get/get.dart';
-import '../controller/chat_controller.dart';
-import '../model/chat_room.dart';
+import '../../controller/chat_controller.dart';
+import '../../model/chat_room.dart';
 import 'dart:math';
 
 class ChatListPage extends StatelessWidget {
