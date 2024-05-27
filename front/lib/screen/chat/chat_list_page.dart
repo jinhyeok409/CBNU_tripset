@@ -62,17 +62,17 @@ class ChatListPage extends StatelessWidget {
                         backgroundColor: getRandomColor(),
                         radius: 25,
                         child: Text(
-                          chatRoom.name[0], // 채팅방 이름의 첫 글자
+                          chatRoom.roomName[0], // 채팅방 이름의 첫 글자
                           style: TextStyle(color: Colors.white, fontSize: 20),
                         ),
                       ),
                       title: Text(
-                        chatRoom.name,
+                        chatRoom.roomName,
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       subtitle: Text(
-                        chatRoom.lastMessage,
+                        chatRoom.roomName,
                         style: TextStyle(
                           fontWeight: FontWeight.normal,
                           color: Colors.grey,

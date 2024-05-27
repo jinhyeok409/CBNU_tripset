@@ -1,14 +1,14 @@
 // chat_room.dart (모델)
 class ChatRoom {
-  final String name;
-  final String lastMessage;
+  final String roomName;
 
-  ChatRoom({required this.name, required this.lastMessage});
+  ChatRoom({
+    required this.roomName,
+  });
 
   factory ChatRoom.fromJson(Map<String, dynamic> json) {
     return ChatRoom(
-      name: json['name'],
-      lastMessage: json['last_message'],
+      roomName: json['roomName'],
     );
   }
 }

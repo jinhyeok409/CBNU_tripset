@@ -57,7 +57,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.chatRoom.name),
+        title: Text(widget.chatRoom.roomName),
       ),
       body: GestureDetector(
         onTap: dismissKeyboard,

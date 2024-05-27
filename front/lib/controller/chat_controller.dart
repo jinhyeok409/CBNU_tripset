@@ -77,7 +77,7 @@ class ChatController extends GetxController {
     );
 
     if (response.statusCode == 200) {
-      List<dynamic> data = json.decode(response.body);
+      List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
       chatRooms.value =
           data.map((chatRoom) => ChatRoom.fromJson(chatRoom)).toList();
       print("Chat list loading Success");
