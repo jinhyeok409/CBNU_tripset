@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:front/screen/detail_page.dart';
-import 'package:front/screen/post_list.dart';
+import 'package:front/screen/post/detail_page.dart';
+import 'package:front/screen/post/post_list.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import '../controller/post_list_scroll_controller.dart';
+import '../../controller/post_list_scroll_controller.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");

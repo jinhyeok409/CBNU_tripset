@@ -46,9 +46,11 @@ class LoginState extends State<Login> {
           Map<String, dynamic> responseBody =
               json.decode(response.body); // 반환값 디코드
           String? token = responseBody['accessToken'];
+          print(token);
           if (token != null) {
             await storage.write(key: 'accessToken', value: token);
             print('Login successful.');
+            print(token);
             //Get.toNamed('/home');
             Get.offNamed('/root');
           }

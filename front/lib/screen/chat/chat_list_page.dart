@@ -1,9 +1,7 @@
-// chat_list_page.dart (채팅방 목록 페이지)
 import 'package:flutter/material.dart';
-import 'package:front/screen/chat_room_page.dart';
+import 'package:front/screen/chat/chat_room_page.dart';
 import 'package:get/get.dart';
-import '../controller/chat_controller.dart';
-import '../model/chat_room.dart';
+import '../../controller/chat_controller.dart';
 import 'dart:math';
 
 class ChatListPage extends StatelessWidget {
@@ -28,8 +26,6 @@ class ChatListPage extends StatelessWidget {
         title: Row(
           children: [
             Padding(padding: EdgeInsets.fromLTRB(10, 0, 0, 0)),
-            // Image.asset('assets/logo.png',
-            //     width: 110, height: 22, fit: BoxFit.fill), // 로고
             Text(
               'TRIPSET.',
               style: TextStyle(
@@ -66,17 +62,17 @@ class ChatListPage extends StatelessWidget {
                         backgroundColor: getRandomColor(),
                         radius: 25,
                         child: Text(
-                          chatRoom.name[0], // 채팅방 이름의 첫 글자
+                          chatRoom.roomName[0], // 채팅방 이름의 첫 글자
                           style: TextStyle(color: Colors.white, fontSize: 20),
                         ),
                       ),
                       title: Text(
-                        chatRoom.name,
+                        chatRoom.roomName,
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       subtitle: Text(
-                        chatRoom.lastMessage,
+                        chatRoom.roomName,
                         style: TextStyle(
                           fontWeight: FontWeight.normal,
                           color: Colors.grey,
