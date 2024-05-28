@@ -81,6 +81,5 @@ class AppBinding extends Bindings {
   void dependencies() {
     Get.put(PostListScrollController(), permanent: true);
     Get.put(BottomNavController());
-    Get.put(LikePostListController());
   }
 }

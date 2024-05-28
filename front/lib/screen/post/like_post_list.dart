@@ -7,6 +7,7 @@ class LikePostList extends GetView<LikePostListController> {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(LikePostListController());
     return Scaffold(
       appBar: AppBar(
           toolbarHeight: 100,

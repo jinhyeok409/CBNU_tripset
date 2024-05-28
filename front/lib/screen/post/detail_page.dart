@@ -9,10 +9,6 @@ import 'package:jwt_decoder/jwt_decoder.dart'; // 게시물 모델 임포트
 
 // 업데이트랑 삭제 부분 구현 하고 + 아이디값 적용해서 url관리
 // 댓글 부분
-void main() async {
-  await dotenv.load(fileName: ".env");
-  runApp(PostDetailPage());
-}
 
 class PostDetailPage extends StatefulWidget {
   const PostDetailPage({super.key});
@@ -27,12 +23,14 @@ class PostDetailPageState extends State<PostDetailPage> {
   String title = "";
   String content = "";
   String username = "";
-  String createDate = "";
+  //String createDate = "";
+  DateTime createDate = DateTime.now();
   int likeCount = 0;
   bool isLiked = false;
   bool isCommentLiked = false;
   String tokenUsername = "";
   List<Map<String, dynamic>> comments = [];
+  bool isLoading = true;
 
   bool isAuthorVerified(String username, String tokenUsername) {
     // username과 tokenUsername을 비교하여 일치 여부를 확인하고 true 또는 false 반환
@@ -76,8 +74,9 @@ class PostDetailPageState extends State<PostDetailPage> {
         content = data['content'];
         username = data['author']['username'];
         comments = List<Map<String, dynamic>>.from(data['commentDTOList']);
-        createDate = data['createDate'];
+        createDate = DateTime.parse(data['createDate']);
         likeCount = data['likeCount'];
+        isLoading = false;
       });
     } else {
       print("fail");
@@ -401,210 +400,227 @@ class PostDetailPageState extends State<PostDetailPage> {
         title: 'DetailPage',
         home: Scaffold(
           appBar: AppBar(
-            title: null,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Get.find<PostListScrollController>().reload();
-                Get.offAllNamed('/root');
-              },
-            ),
-            actions: [
-              if (isAuthorVerified(username, tokenUsername))
-                IconButton(
-                  icon: Icon(Icons.edit),
-                  onPressed: () {
-                    String postId = Get.arguments;
-                    Get.toNamed('/postEdit', arguments: {
-                      'title': title,
-                      'content': content,
-                      'postId': postId,
-                    });
-                  },
-                ),
-              if (isAuthorVerified(username, tokenUsername))
-                IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () {
-                    String postId = Get.arguments;
-                    deletePost(context, postId);
-                  },
-                ),
-            ],
-          ),
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          title,
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              username,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.normal,
-                                color: Colors.grey,
+              title: null,
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  Get.find<PostListScrollController>().reload();
+                  Get.offAllNamed('/root');
+                },
+              ),
+              actions: [
+                if (!isLoading &&
+                    isAuthorVerified(username, tokenUsername)) ...[
+                  IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () {
+                      Get.toNamed('/updatePost', arguments: Get.arguments);
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () {
+                      deletePost(context, Get.arguments);
+                    },
+                  ),
+                ],
+              ]),
+          body: isLoading
+              ? Center(child: CircularProgressIndicator())
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                title,
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            Text(
-                              createDate,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.normal,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 16),
-                        Text(
-                          content,
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        Divider(),
-                        Row(
-                          children: [
-                            Text(
-                              '댓글 ${comments.length}',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w500),
-                            ),
-                            Spacer(),
-                            Text(likeCount.toString()),
-                            IconButton(
-                              icon: Icon(
-                                isLiked
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
-                                color: isLiked ? Colors.red : null,
-                              ),
-                              onPressed: () {
-                                postLike();
-                              },
-                            ),
-                          ],
-                        ),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: comments.length,
-                          itemBuilder: (_, index) {
-                            final comment = comments[index];
-                            final commentId = comment['id'];
-                            return ListTile(
-                              contentPadding:
-                                  EdgeInsets.symmetric(horizontal: 3.0),
-                              title: Row(
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Expanded(
-                                    child: Text(
-                                      comment['author']['username'],
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.black54),
+                                  Text(
+                                    username,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.grey,
                                     ),
                                   ),
-                                  Text(comment['likeCount'].toString()),
+                                  Text(
+                                    '${createDate.month.toString().padLeft(2, '0')}/${createDate.day.toString().padLeft(2, '0')} ${createDate.hour.toString().padLeft(2, '0')}:${createDate.minute.toString().padLeft(2, '0')}',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 16),
+                              Text(
+                                content,
+                                style: TextStyle(fontSize: 18),
+                              ),
+                              Divider(),
+                              Row(
+                                children: [
+                                  Text(
+                                    '댓글 ${comments.length}',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                  Spacer(),
+                                  Text(likeCount.toString()),
                                   IconButton(
                                     icon: Icon(
-                                      isCommentLiked
+                                      isLiked
                                           ? Icons.favorite
                                           : Icons.favorite_border,
-                                      color: isCommentLiked ? Colors.red : null,
-                                      size: 20,
+                                      color: isLiked ? Colors.red : null,
                                     ),
                                     onPressed: () {
-                                      likeComment(
-                                          context, commentId.toString());
+                                      postLike();
                                     },
                                   ),
-                                  if (isCommentAuthorVerified(
-                                      comment['author']['username'],
-                                      tokenUsername))
-                                    IconButton(
-                                      icon: Icon(
-                                        Icons.delete,
-                                        size: 20,
-                                      ),
-                                      onPressed: () {
-                                        deleteComment(
-                                            context, commentId.toString());
-                                      },
-                                      padding: EdgeInsets.zero,
-                                      constraints: BoxConstraints(),
-                                    )
                                 ],
                               ),
-                              subtitle: Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      comment['comment'],
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.black87,
-                                      ),
+                              ListView.separated(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount: comments.length,
+                                itemBuilder: (_, index) {
+                                  final comment = comments[index];
+                                  final commentId = comment['id'];
+                                  // final isCommentLiked = /* isCommentLiked 로직 추가 */;
+                                  // final tokenUsername = /* tokenUsername 로직 추가 */;
+
+                                  return ListTile(
+                                    contentPadding:
+                                        EdgeInsets.symmetric(horizontal: 3.0),
+                                    title: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            comment['author']['username'],
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.black54,
+                                            ),
+                                          ),
+                                        ),
+                                        Text(
+                                          comment['likeCount'].toString(),
+                                          style: TextStyle(fontSize: 15),
+                                        ),
+                                        IconButton(
+                                          icon: Icon(
+                                            isCommentLiked
+                                                ? Icons.favorite
+                                                : Icons.favorite_border,
+                                            color: isCommentLiked
+                                                ? Colors.red
+                                                : null,
+                                            size: 20,
+                                          ),
+                                          onPressed: () {
+                                            likeComment(
+                                                context, commentId.toString());
+                                          },
+                                        ),
+                                        if (isCommentAuthorVerified(
+                                            comment['author']['username'],
+                                            tokenUsername))
+                                          IconButton(
+                                            icon: Icon(
+                                              Icons.delete,
+                                              size: 20,
+                                            ),
+                                            onPressed: () {
+                                              deleteComment(context,
+                                                  commentId.toString());
+                                            },
+                                            padding: EdgeInsets.zero,
+                                            constraints: BoxConstraints(),
+                                          )
+                                      ],
                                     ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: TextField(
-                        controller: _commentController,
-                        style: TextStyle(
-                          fontSize: 18,
-                        ),
-                        decoration: InputDecoration(
-                          labelText: '내용을 입력하세요.',
-                          labelStyle: TextStyle(
-                            fontWeight: FontWeight.w300,
+                                    subtitle: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            comment['comment'],
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w400,
+                                              color: Colors.black87,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                                // separatorBuilder: (_, index) => SizedBox(
+                                //   height: 1.0,
+                                //   child: DecoratedBox(
+                                //     decoration: BoxDecoration(
+                                //       color: Colors.black12,
+                                //     ),
+                                //   ),
+                                // ),
+                                separatorBuilder: (_, index) =>
+                                    Divider(thickness: 1.0),
+                              )
+                            ],
                           ),
-                          border: InputBorder.none,
                         ),
-                        maxLines: null,
                       ),
                     ),
-                    IconButton(
-                      icon: Icon(Icons.send),
-                      color: Colors.blue.shade200,
-                      onPressed: () {
-                        createComment(context);
-                        print('댓글 작성 버튼 눌림');
-                      },
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: TextField(
+                              controller: _commentController,
+                              style: TextStyle(
+                                fontSize: 18,
+                              ),
+                              decoration: InputDecoration(
+                                labelText: '내용을 입력하세요.',
+                                labelStyle: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                ),
+                                border: InputBorder.none,
+                              ),
+                              maxLines: null,
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.send),
+                            color: Colors.blue.shade200,
+                            onPressed: () {
+                              createComment(context);
+                              print('댓글 작성 버튼 눌림');
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
         ),
       ),
     );
@@ -612,6 +628,8 @@ class PostDetailPageState extends State<PostDetailPage> {
 }
 
 class EditPostPage extends StatefulWidget {
+  const EditPostPage({super.key});
+
   @override
   _EditPostPageState createState() => _EditPostPageState();
 }

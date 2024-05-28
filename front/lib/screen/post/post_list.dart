@@ -3,7 +3,6 @@ import 'package:front/model/post.dart';
 import 'package:get/get.dart';
 import '../../controller/post_list_scroll_controller.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import './like_post_list.dart';
 
 class PostList extends GetView<PostListScrollController> {
   const PostList({super.key});

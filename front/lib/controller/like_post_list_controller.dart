@@ -37,7 +37,6 @@ class LikePostListController extends GetxController {
             .map((postJson) => LikePost.fromJson(postJson))
             .toList();
         posts.value = fetchedPosts;
-        print('access success');
       } else {
         throw Exception('Failed to load posts');
       }
