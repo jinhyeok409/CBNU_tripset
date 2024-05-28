@@ -61,18 +61,51 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget> with Single
   }
 
   Future<void> _pickLocation(int dayIndex, int scheduleIndex) async {
-    final place = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PlaceSearchScreen(),
-      ),
+    TextEditingController textEditingController = TextEditingController();
+
+    String? scheduleName = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('일정 이름 입력'),
+          content: TextField(
+            controller: textEditingController,
+            decoration: InputDecoration(hintText: "일정 이름을 입력하세요."),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('취소'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('다음'),
+              onPressed: () {
+                Navigator.of(context).pop(textEditingController.text);
+              },
+            ),
+          ],
+        );
+      },
     );
 
-    if (place != null) {
-      setState(() {
-        _schedules[dayIndex][scheduleIndex].location = place.formattedAddress;
-        print("새로 추가된 위치의 정보 > 위도 : ${place.geometry?.location?.lat}, 경도 : ${place.geometry?.location?.lng}");
-      });
+    if (scheduleName != null && scheduleName.isNotEmpty) {
+      final place = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PlaceSearchScreen(),
+        ),
+      );
+
+      if (place != null) {
+        setState(() {
+          _schedules[dayIndex][scheduleIndex].location = "${scheduleName}: ${place.formattedAddress}";
+          _schedules[dayIndex][scheduleIndex].latitude = place.geometry?.location?.lat.toString();
+          _schedules[dayIndex][scheduleIndex].longitude = place.geometry?.location?.lng.toString();
+          print("새로 추가된 위치의 정보 > 이름 : ${scheduleName}: ${place.formattedAddress} 위도 : ${place.geometry?.location?.lat}, 경도 : ${place.geometry?.location?.lng}");
+        });
+      }
     }
   }
 
@@ -122,18 +155,24 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget> with Single
                         title: Row(
                           children: [
                             Icon(Icons.access_time),
+                            SizedBox(width: 5), // 간격 추가
                             Text(schedule.time != null
                                 ? schedule.time!.format(context)
                                 : "시간 선택"),
+                            SizedBox(width: 10), // 간격 추가
                             Expanded(
-                              child: TextField(
-                                readOnly: true,
-                                decoration: InputDecoration(
-                                  labelText: schedule.location != null
-                                      ? schedule.location!
-                                      : "위치 입력",
-                                ),
+                              child: GestureDetector(
                                 onTap: () => _pickLocation(dayIndex, scheduleIndex),
+                                child: AbsorbPointer(
+                                  child: TextField(
+                                    readOnly: true,
+                                    decoration: InputDecoration(
+                                      labelText: schedule.location != null
+                                          ? schedule.location!
+                                          : "일정 입력",
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
                           ],
@@ -159,7 +198,9 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget> with Single
 
 class Schedule {
   TimeOfDay? time;
-  String? location;
+  String? location; // 일정 이름 및 주소
+  String? latitude; // 위도
+  String? longitude; // 경도
 
-  Schedule({this.time, this.location});
+  Schedule({this.time, this.location, this.latitude, this.longitude});
 }

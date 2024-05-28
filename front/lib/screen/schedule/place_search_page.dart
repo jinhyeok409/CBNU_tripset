@@ -17,8 +17,8 @@ class _PlaceSearchScreenState extends State<PlaceSearchScreen> {
   Set<Marker> _markers = {}; // 마커 세트 추가
 
   CameraPosition initialCameraPosition = CameraPosition(
-    target: LatLng(37.7749, -122.4194), // 초기 위치
-    zoom: 12,
+    target: LatLng(36.6284, 127.4574), // 초기 위치 (현재 충북대로 설정)
+    zoom: 15,
   );
 
   @override

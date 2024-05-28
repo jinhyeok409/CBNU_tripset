@@ -4,6 +4,7 @@ import 'package:front/screen/schedule/schedule_page.dart';
 import 'package:front/screen/root.dart';
 import 'package:get/get.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'controller/post_list_scroll_controller.dart';
 import 'controller/like_post_list_controller.dart';
 import 'screen/home.dart';
@@ -19,6 +20,8 @@ void main() async {
   await dotenv.load(fileName: ".env");
   String serverUri = dotenv.env['SERVER_URI']!;
   print('서버 URI: $serverUri');
+  
+  await initializeDateFormatting('ko_KR', null); // 한글 달력을 사용하기 위함
 
   runApp(MyApp());
 }
