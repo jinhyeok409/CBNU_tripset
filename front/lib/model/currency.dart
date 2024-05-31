@@ -7,14 +7,14 @@ class Currency {
   Currency({required this.nationName, required this.imageFileName, required this.symbol, required this.code});
 }
 
-final southKorea = 'South Korea';
-final eu = 'EU';
-final usa = 'U.S.A.';
-final japan = 'Japan';
-final china = 'China';
-final gb = 'United Kingdom';
-final mexico = 'Mexico';
-final hongkong = 'HongKong';
+const southKorea = 'South Korea';
+const eu = 'EU';
+const usa = 'U.S.A.';
+const japan = 'Japan';
+const china = 'China';
+const gb = 'United Kingdom';
+// const mexico = 'Mexico';
+// const hongkong = 'HongKong';
 
 final currencyBank = {
   southKorea: Currency(
