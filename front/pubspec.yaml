@@ -32,7 +32,6 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-
   get: ^4.6.6 # 상태관리 및 라우팅
   
   loading_animation_widget: # 로딩 화면 패키지
