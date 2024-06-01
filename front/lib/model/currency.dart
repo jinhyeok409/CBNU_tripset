@@ -7,12 +7,12 @@ class Currency {
   Currency({required this.nationName, required this.imageFileName, required this.symbol, required this.code});
 }
 
-const southKorea = 'South Korea';
+const southKorea = 'Korea';
 const eu = 'EU';
 const usa = 'U.S.A.';
 const japan = 'Japan';
 const china = 'China';
-const gb = 'United Kingdom';
+const gb = 'U.K.';
 // const mexico = 'Mexico';
 // const hongkong = 'HongKong';
 
