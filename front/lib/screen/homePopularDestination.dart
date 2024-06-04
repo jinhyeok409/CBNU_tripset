@@ -1,23 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-Widget popularDestinations(String img, String city, String country) {
+Widget popularDestinations(
+    BuildContext context, String img, String city, String country) {
   return Container(
     padding: EdgeInsets.fromLTRB(2, 2, 2, 3),
     decoration: BoxDecoration(
       color: Colors.white,
       borderRadius: BorderRadius.circular(4),
     ),
-    height: 152,
-    width: 95,
+    height: MediaQuery.of(context).size.height * 0.22, //152,
+    width: MediaQuery.of(context).size.width * 0.29, //95,
     child: Column(
       // mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center, //CrossAxisAlignment.start,
       children: [
         Image.asset(
           img,
-          height: 114,
-          width: 91,
+          height: MediaQuery.of(context).size.height * 0.15, // 112,
+          width: MediaQuery.of(context).size.width * 0.28, //91,
+          fit: BoxFit.fitWidth,
         ),
         SizedBox(
           height: 2,

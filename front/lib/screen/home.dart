@@ -52,7 +52,8 @@ class Home extends StatelessWidget {
           if (exchangeRateController.isLoading.value) {
             return Center(child: CircularProgressIndicator());
           } else if (exchangeRateController.errorMessage.value.isNotEmpty) {
-            return Center(child: Text(exchangeRateController.errorMessage.value));
+            return Center(
+                child: Text(exchangeRateController.errorMessage.value));
           } else {
             return Center(
               child: CurrencyExchange(),
@@ -100,14 +101,16 @@ class _CurrencyExchangeState extends State<CurrencyExchange> {
 
   Future<String> fetchTimeForCountry(String country) async {
     tz.initializeTimeZones();
-    final response = await http.get(Uri.parse('http://worldtimeapi.org/api/timezone/${countryToTimezone[country]}'));
+    final response = await http.get(Uri.parse(
+        'http://worldtimeapi.org/api/timezone/${countryToTimezone[country]}'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       final rawDateTime = DateTime.parse(data['datetime']);
       final timezoneName = countryToTimezone[country];
       final location = tz.getLocation(timezoneName!);
       final dateTimeInZone = tz.TZDateTime.from(rawDateTime, location);
-      final formattedTime = DateFormat('yy.MM.dd hh:mm a').format(dateTimeInZone);
+      final formattedTime =
+          DateFormat('yy.MM.dd hh:mm a').format(dateTimeInZone);
       return formattedTime;
     } else {
       throw Exception('Failed to load time');
@@ -129,7 +132,7 @@ class _CurrencyExchangeState extends State<CurrencyExchange> {
       child: ListView.separated(
         itemCount: 3,
         itemBuilder: (context, index) {
-          if(index == 0){
+          if (index == 0) {
             return Column(
               children: [
                 Row(
@@ -154,7 +157,8 @@ class _CurrencyExchangeState extends State<CurrencyExchange> {
                                 fetchTimeForCountry1();
                               });
                             },
-                            items: currencyBank.keys.map<DropdownMenuItem<String>>((String key) {
+                            items: currencyBank.keys
+                                .map<DropdownMenuItem<String>>((String key) {
                               return DropdownMenuItem<String>(
                                 value: key,
                                 child: Text(key),
@@ -191,7 +195,8 @@ class _CurrencyExchangeState extends State<CurrencyExchange> {
                                 fetchTimeForCountry2();
                               });
                             },
-                            items: currencyBank.keys.map<DropdownMenuItem<String>>((String key) {
+                            items: currencyBank.keys
+                                .map<DropdownMenuItem<String>>((String key) {
                               return DropdownMenuItem<String>(
                                 value: key,
                                 child: Text(key),
@@ -213,8 +218,7 @@ class _CurrencyExchangeState extends State<CurrencyExchange> {
                 SizedBox(height: 20.0),
               ],
             );
-          }
-          else if (index == 1) {
+          } else if (index == 1) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -243,9 +247,12 @@ class _CurrencyExchangeState extends State<CurrencyExchange> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    popularDestinations('assets/destination/paris.gif', 'Paris', 'France'),
-                    popularDestinations('assets/destination/rome.gif', 'Rome', 'Italy'),
-                    popularDestinations('assets/destination/turkey.gif', 'Istanbul', 'Turkey'),
+                    popularDestinations(context, 'assets/destination/paris.gif',
+                        'Paris', 'France'),
+                    popularDestinations(context, 'assets/destination/rome.gif',
+                        'Rome', 'Italy'),
+                    popularDestinations(context,
+                        'assets/destination/turkey.gif', 'Istanbul', 'Turkey'),
                   ],
                 ),
                 SizedBox(height: 10),
