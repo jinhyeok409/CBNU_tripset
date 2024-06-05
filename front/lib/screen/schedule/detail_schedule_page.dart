@@ -241,7 +241,9 @@ class Schedule {
 
   Map<String, dynamic> toMap() {
     return {
-      'time': time?.format(Get.context!),
+      'time': time != null
+          ? DateFormat.jm().format(DateTime(0, 0, 0, time!.hour, time!.minute))
+          : null,
       'location': location,
       'latitude': latitude,
       'longitude': longitude,
@@ -250,15 +252,16 @@ class Schedule {
 
   static Schedule fromMap(Map<String, dynamic> map) {
     return Schedule(
-      time: map['time'] != null
-          ? TimeOfDay(
-              hour: int.parse(map['time'].split(":")[0]),
-              minute: int.parse(map['time'].split(":")[1]),
-            )
-          : null,
+      time: map['time'] != null ? _parseTimeOfDay(map['time']) : null,
       location: map['location'],
       latitude: map['latitude'],
       longitude: map['longitude'],
     );
+  }
+
+  static TimeOfDay _parseTimeOfDay(String timeString) {
+    final format = DateFormat.jm(); // "hh:mm a" 형식
+    final dateTime = format.parse(timeString.trim()); // 공백 제거
+    return TimeOfDay(hour: dateTime.hour, minute: dateTime.minute);
   }
 }
