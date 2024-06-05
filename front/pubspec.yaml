@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  shared_preferences: ^2.0.13 # 로컬 저장소 사용 * 아마존 적용전 테스트용
 
   timezone: ^0.9.3
 

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:front/screen/schedule/detail_schedule_page.dart';
 import 'package:get/get.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -24,8 +22,6 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
       _focusedDay = focusedDay;
       _rangeStart = start;
       _rangeEnd = end;
-      print("start $_rangeStart");
-      print("end $_rangeEnd");
     });
   }
 
@@ -110,12 +106,12 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
                     );
                   } else {
                     // 세부 일정 페이지로 이동
-                    print("새로운 일정 : ${textEditingController.text} (${DateFormat("yy/MM/dd").format(_rangeStart!)} ~ ${DateFormat("yy/MM/dd").format(_rangeEnd!)})");
-                    Get.to(() => DetailScheduleWidget(
-                          rangeStart: _rangeStart!,
-                          rangeEnd: _rangeEnd!,
-                          title: textEditingController.text,
-                        ));
+                    Get.back(result: {
+                      'title': textEditingController.text,
+                      'rangeStart': _rangeStart!.toIso8601String(),
+                      'rangeEnd': _rangeEnd!.toIso8601String(),
+                      'schedules': [],
+                    });
                   }
                 },
                 child: Icon(

@@ -2,19 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'place_search_page.dart';
 import 'package:google_place/google_place.dart';
+import 'package:get/get.dart';
 
 class DetailScheduleWidget extends StatefulWidget {
   final DateTime rangeStart;
   final DateTime rangeEnd;
   final String title;
+  final List<dynamic> schedules;
 
-  DetailScheduleWidget({required this.rangeStart, required this.rangeEnd, required this.title});
+  DetailScheduleWidget({
+    required this.rangeStart,
+    required this.rangeEnd,
+    required this.title,
+    required this.schedules,
+  });
 
   @override
   _DetailScheduleWidgetState createState() => _DetailScheduleWidgetState();
 }
 
-class _DetailScheduleWidgetState extends State<DetailScheduleWidget> with SingleTickerProviderStateMixin {
+class _DetailScheduleWidgetState extends State<DetailScheduleWidget>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late List<DateTime> _days;
   late List<List<Schedule>> _schedules;
@@ -24,7 +32,14 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget> with Single
     super.initState();
     _initializeDays();
     _tabController = TabController(length: _days.length, vsync: this);
-    _schedules = List.generate(_days.length, (_) => [Schedule()]);
+    _schedules = List.generate(
+      _days.length,
+      (index) => widget.schedules.isNotEmpty && widget.schedules.length > index
+          ? (widget.schedules[index] as List)
+              .map((s) => Schedule.fromMap(s as Map<String, dynamic>))
+              .toList()
+          : [Schedule()],
+    );
   }
 
   void _initializeDays() {
@@ -100,13 +115,28 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget> with Single
 
       if (place != null) {
         setState(() {
-          _schedules[dayIndex][scheduleIndex].location = "${scheduleName}: ${place.formattedAddress}";
-          _schedules[dayIndex][scheduleIndex].latitude = place.geometry?.location?.lat.toString();
-          _schedules[dayIndex][scheduleIndex].longitude = place.geometry?.location?.lng.toString();
-          print("새로 추가된 위치의 정보 > 이름 : ${scheduleName}: ${place.formattedAddress} 위도 : ${place.geometry?.location?.lat}, 경도 : ${place.geometry?.location?.lng}");
+          _schedules[dayIndex][scheduleIndex].location =
+              "${scheduleName}: ${place.formattedAddress}";
+          _schedules[dayIndex][scheduleIndex].latitude =
+              place.geometry?.location?.lat.toString();
+          _schedules[dayIndex][scheduleIndex].longitude =
+              place.geometry?.location?.lng.toString();
         });
       }
     }
+  }
+
+  void _saveSchedules() {
+    List<List<Map<String, dynamic>>> schedulesToSave = _schedules
+        .map((daySchedules) =>
+            daySchedules.map((schedule) => schedule.toMap()).toList())
+        .toList();
+    Get.back(result: {
+      'title': widget.title,
+      'rangeStart': widget.rangeStart.toIso8601String(),
+      'rangeEnd': widget.rangeEnd.toIso8601String(),
+      'schedules': schedulesToSave,
+    });
   }
 
   @override
@@ -162,7 +192,8 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget> with Single
                             SizedBox(width: 10), // 간격 추가
                             Expanded(
                               child: GestureDetector(
-                                onTap: () => _pickLocation(dayIndex, scheduleIndex),
+                                onTap: () =>
+                                    _pickLocation(dayIndex, scheduleIndex),
                                 child: AbsorbPointer(
                                   child: TextField(
                                     readOnly: true,
@@ -192,6 +223,10 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget> with Single
           );
         }),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _saveSchedules,
+        child: Icon(Icons.save),
+      ),
     );
   }
 }
@@ -203,4 +238,27 @@ class Schedule {
   String? longitude; // 경도
 
   Schedule({this.time, this.location, this.latitude, this.longitude});
+
+  Map<String, dynamic> toMap() {
+    return {
+      'time': time?.format(Get.context!),
+      'location': location,
+      'latitude': latitude,
+      'longitude': longitude,
+    };
+  }
+
+  static Schedule fromMap(Map<String, dynamic> map) {
+    return Schedule(
+      time: map['time'] != null
+          ? TimeOfDay(
+              hour: int.parse(map['time'].split(":")[0]),
+              minute: int.parse(map['time'].split(":")[1]),
+            )
+          : null,
+      location: map['location'],
+      latitude: map['latitude'],
+      longitude: map['longitude'],
+    );
+  }
 }
