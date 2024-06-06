@@ -67,90 +67,87 @@ class _PlaceSearchScreenState extends State<PlaceSearchScreen> {
     }
   }
 
-
-
   void moveToLocation(LatLng location) {
     mapController.animateCamera(CameraUpdate.newLatLngZoom(location, 15));
   }
 
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: Text("위치 선택"),
-    ),
-    body: Column(
-      children: [
-        Expanded(
-          child: Stack(
-            children: [
-              GoogleMap(
-                initialCameraPosition: initialCameraPosition,
-                onMapCreated: (GoogleMapController controller) {
-                  mapController = controller;
-                },
-                markers: _markers,
-              ),
-              Column(
-                children: [
-                  Container(
-                    color: Colors.white,
-                    padding: EdgeInsets.all(8.0),
-                    child: TextField(
-                      controller: _searchController,
-                      decoration: InputDecoration(
-                        hintText: "주소를 검색하세요.",
-                        suffixIcon: Icon(Icons.search),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("위치 선택"),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: Stack(
+              children: [
+                GoogleMap(
+                  initialCameraPosition: initialCameraPosition,
+                  onMapCreated: (GoogleMapController controller) {
+                    mapController = controller;
+                  },
+                  markers: _markers,
+                ),
+                Column(
+                  children: [
+                    Container(
+                      color: Colors.white,
+                      padding: EdgeInsets.all(8.0),
+                      child: TextField(
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          hintText: "주소를 검색하세요.",
+                          suffixIcon: Icon(Icons.search),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
                         ),
-                      ),
-                      onChanged: (value) {
-                        if (value.isNotEmpty) {
-                          autoCompleteSearch(value);
-                        } else {
-                          setState(() {
-                            predictions = [];
-                          });
-                        }
-                      },
-                    ),
-                  ),
-                  if (predictions.isNotEmpty)
-                    Expanded(
-                      child: Container(
-                        color: Colors.white,
-                        child: ListView.builder(
-                          itemCount: predictions.length,
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                              title: Text(predictions[index].description!),
-                              onTap: () {
-                                getPlaceDetails(predictions[index].placeId!);
-                              },
-                            );
-                          },
-                        ),
+                        onChanged: (value) {
+                          if (value.isNotEmpty) {
+                            autoCompleteSearch(value);
+                          } else {
+                            setState(() {
+                              predictions = [];
+                            });
+                          }
+                        },
                       ),
                     ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        if (selectedPlace != null)
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context, selectedPlace);
-              },
-              child: Text("선택 완료"),
+                    if (predictions.isNotEmpty)
+                      Expanded(
+                        child: Container(
+                          color: Colors.white,
+                          child: ListView.builder(
+                            itemCount: predictions.length,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                title: Text(predictions[index].description!),
+                                onTap: () {
+                                  getPlaceDetails(predictions[index].placeId!);
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ],
             ),
           ),
-      ],
-    ),
-  );
-}
-
+          if (selectedPlace != null)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context, selectedPlace);
+                },
+                child: Text("선택 완료"),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 }

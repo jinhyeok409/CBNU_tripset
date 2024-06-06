@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:front/screen/schedule/placePathPage.dart';
 import 'package:intl/intl.dart';
 import 'place_search_page.dart';
 import 'package:google_place/google_place.dart';
@@ -34,10 +35,10 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget>
     _tabController = TabController(length: _days.length, vsync: this);
     _schedules = List.generate(
       _days.length,
-      (index) => widget.schedules.isNotEmpty && widget.schedules.length > index
+          (index) => widget.schedules.isNotEmpty && widget.schedules.length > index
           ? (widget.schedules[index] as List)
-              .map((s) => Schedule.fromMap(s as Map<String, dynamic>))
-              .toList()
+          .map((s) => Schedule.fromMap(s as Map<String, dynamic>))
+          .toList()
           : [Schedule()],
     );
   }
@@ -72,6 +73,12 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget>
   void _addSchedule(int dayIndex) {
     setState(() {
       _schedules[dayIndex].add(Schedule());
+    });
+  }
+
+  void _removeSchedule(int dayIndex, int scheduleIndex) {
+    setState(() {
+      _schedules[dayIndex].removeAt(scheduleIndex);
     });
   }
 
@@ -116,7 +123,7 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget>
       if (place != null) {
         setState(() {
           _schedules[dayIndex][scheduleIndex].location =
-              "${scheduleName}: ${place.formattedAddress}";
+          "${scheduleName}: ${place.formattedAddress}";
           _schedules[dayIndex][scheduleIndex].latitude =
               place.geometry?.location?.lat.toString();
           _schedules[dayIndex][scheduleIndex].longitude =
@@ -126,17 +133,33 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget>
     }
   }
 
-  void _saveSchedules() {
+  Future<List<Map<String, dynamic>>> _saveSchedules() async {
     List<List<Map<String, dynamic>>> schedulesToSave = _schedules
         .map((daySchedules) =>
-            daySchedules.map((schedule) => schedule.toMap()).toList())
+        daySchedules.map((schedule) => schedule.toMap()).toList())
         .toList();
-    Get.back(result: {
-      'title': widget.title,
-      'rangeStart': widget.rangeStart.toIso8601String(),
-      'rangeEnd': widget.rangeEnd.toIso8601String(),
-      'schedules': schedulesToSave,
-    });
+
+    List<Map<String, dynamic>> paths = [];
+
+    for (int i = 0; i < schedulesToSave.length; i++) {
+      List<Map<String, dynamic>> pathSchedules = [];
+      for (int j = 0; j < schedulesToSave[i].length; j++) {
+        Map<String, dynamic> scheduleMap = schedulesToSave[i][j];
+        if (scheduleMap['latitude'] != null && scheduleMap['longitude'] != null) {
+          pathSchedules.add(scheduleMap);
+        }
+      }
+      if (pathSchedules.isNotEmpty) {
+        paths.add({
+          'title': widget.title,
+          'rangeStart': widget.rangeStart.toIso8601String(),
+          'rangeEnd': widget.rangeEnd.toIso8601String(),
+          'schedules': pathSchedules,
+        });
+      }
+    }
+
+    return paths;
   }
 
   @override
@@ -208,6 +231,10 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget>
                             ),
                           ],
                         ),
+                        trailing: IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () => _removeSchedule(dayIndex, scheduleIndex),
+                        ),
                       );
                     },
                   ),
@@ -223,9 +250,31 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget>
           );
         }),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _saveSchedules,
-        child: Icon(Icons.save),
+      floatingActionButton: Stack(
+        children: [
+          Align(
+            alignment: Alignment.bottomRight,
+            child: FloatingActionButton(
+              onPressed: _saveSchedules,
+              child: Icon(Icons.save),
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomLeft,
+            child: FloatingActionButton(
+              onPressed: () async {
+                List<Map<String, dynamic>> paths = await _saveSchedules();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => placePathPage(paths: paths),
+                  ),
+                );
+              },
+              child: Icon(Icons.map),
+            ),
+          ),
+        ],
       ),
     );
   }

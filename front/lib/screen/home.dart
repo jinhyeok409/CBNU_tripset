@@ -12,6 +12,8 @@ import '../model/currency.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/standalone.dart' as tz;
 
+import 'myPage.dart';
+
 class Home extends StatelessWidget {
   const Home({super.key});
 
@@ -43,8 +45,14 @@ class Home extends StatelessWidget {
                   Icons.account_circle,
                   size: 65,
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => UserProfileWidget()),
+                  );
+                },
               ),
+
             ],
           ),
         ),
@@ -110,7 +118,7 @@ class _CurrencyExchangeState extends State<CurrencyExchange> {
       final location = tz.getLocation(timezoneName!);
       final dateTimeInZone = tz.TZDateTime.from(rawDateTime, location);
       final formattedTime =
-          DateFormat('yy.MM.dd hh:mm a').format(dateTimeInZone);
+      DateFormat('yy.MM.dd hh:mm a').format(dateTimeInZone);
       return formattedTime;
     } else {
       throw Exception('Failed to load time');
@@ -233,14 +241,14 @@ class _CurrencyExchangeState extends State<CurrencyExchange> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Text(
-                      'View All',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    // Text(
+                    //   'View All',
+                    //   style: TextStyle(
+                    //     color: Colors.black,
+                    //     fontSize: 12,
+                    //     fontWeight: FontWeight.bold,
+                    //   ),
+                    // ),
                   ],
                 ),
                 SizedBox(height: 10),
