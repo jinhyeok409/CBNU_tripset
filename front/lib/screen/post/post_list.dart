@@ -201,7 +201,7 @@ class PostListView extends GetView<PostListScrollController> {
                       children: [
                         // 날짜와 작성자
                         Text(
-                          '${post.createDate.month.toString().padLeft(2, '0')}/${post.createDate.day.toString().padLeft(2, '0')}  ${post.authorName}',
+                          '${post.createDate.year.toString().substring(2)}.${post.createDate.month.toString().padLeft(2, '0')}.${post.createDate.day.toString().padLeft(2, '0')} ${post.createDate.hour.toString().padLeft(2, '0')}:${post.createDate.minute.toString().padLeft(2, '0')}  ${post.authorName}',
                           style:
                               TextStyle(color: Color(0xFF9F9F9F), fontSize: 16),
                         ),
