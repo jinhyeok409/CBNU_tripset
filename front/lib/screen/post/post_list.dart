@@ -25,7 +25,7 @@ class PostList extends GetView<PostListScrollController> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Obx(
-                            () => InkWell(
+                                () => InkWell(
                               onTap: () {
                                 controller.currentCategory.value = 'ALL';
                                 controller.reload();
@@ -36,7 +36,7 @@ class PostList extends GetView<PostListScrollController> {
                                     fontSize: 25,
                                     fontWeight: FontWeight.w700,
                                     color: (controller.currentCategory.value ==
-                                            'ALL')
+                                        'ALL')
                                         ? Color(0xFF1E1E1E)
                                         : Color(0xFFAFAFAF)),
                               ),
@@ -46,7 +46,7 @@ class PostList extends GetView<PostListScrollController> {
                             width: 25,
                           ),
                           Obx(
-                            () => InkWell(
+                                () => InkWell(
                               onTap: () {
                                 controller.currentCategory.value = 'FREE';
                                 controller.reload();
@@ -57,7 +57,7 @@ class PostList extends GetView<PostListScrollController> {
                                     fontSize: 25,
                                     fontWeight: FontWeight.w700,
                                     color: (controller.currentCategory.value ==
-                                            'FREE')
+                                        'FREE')
                                         ? Color(0xFF1E1E1E)
                                         : Color(0xFFAFAFAF)),
                               ),
@@ -67,22 +67,22 @@ class PostList extends GetView<PostListScrollController> {
                             width: 25,
                           ),
                           Obx(() => InkWell(
-                                onTap: () {
-                                  controller.currentCategory.value = 'PLAN';
-                                  controller.reload();
-                                },
-                                child: Text(
-                                  '계획',
-                                  style: TextStyle(
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.w700,
-                                      color:
-                                          (controller.currentCategory.value ==
-                                                  'PLAN')
-                                              ? Color(0xFF1E1E1E)
-                                              : Color(0xFFAFAFAF)),
-                                ),
-                              )),
+                            onTap: () {
+                              controller.currentCategory.value = 'PLAN';
+                              controller.reload();
+                            },
+                            child: Text(
+                              '계획',
+                              style: TextStyle(
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.w700,
+                                  color:
+                                  (controller.currentCategory.value ==
+                                      'PLAN')
+                                      ? Color(0xFF1E1E1E)
+                                      : Color(0xFFAFAFAF)),
+                            ),
+                          )),
                         ],
                       ),
 
@@ -167,7 +167,7 @@ class PostListView extends GetView<PostListScrollController> {
         return ListView.separated(
           controller: controller.scrollController.value,
           itemCount:
-              controller.posts.length + (controller.hasMore.value ? 1 : 0),
+          controller.posts.length + (controller.hasMore.value ? 1 : 0),
           separatorBuilder: (context, index) => Divider(),
           itemBuilder: (context, index) {
             // 인덱스가 불러온 게시글 수보다 작은 경우 (불러온 게시글 출력)
@@ -189,7 +189,7 @@ class PostListView extends GetView<PostListScrollController> {
                       child: Text(
                         post.content,
                         style:
-                            TextStyle(color: Color(0xFF565656), fontSize: 15),
+                        TextStyle(color: Color(0xFF565656), fontSize: 15),
                         maxLines: 2,
                       ),
                     ),
@@ -203,7 +203,7 @@ class PostListView extends GetView<PostListScrollController> {
                         Text(
                           '${post.createDate.year.toString().substring(2)}.${post.createDate.month.toString().padLeft(2, '0')}.${post.createDate.day.toString().padLeft(2, '0')} ${post.createDate.hour.toString().padLeft(2, '0')}:${post.createDate.minute.toString().padLeft(2, '0')}  ${post.authorName}',
                           style:
-                              TextStyle(color: Color(0xFF9F9F9F), fontSize: 16),
+                          TextStyle(color: Color(0xFF9F9F9F), fontSize: 16),
                         ),
 
                         // 댓글 개수
@@ -246,8 +246,8 @@ class PostListView extends GetView<PostListScrollController> {
               // 더 불러올 데이터가 있는 경우
               return Center(
                   child: //CircularProgressIndicator(),
-                      LoadingAnimationWidget.hexagonDots(
-                          color: Colors.black, size: 40));
+                  LoadingAnimationWidget.hexagonDots(
+                      color: Colors.black, size: 40));
             } else {
               // 불러올 데이터가 없는 경우
               return SizedBox(
