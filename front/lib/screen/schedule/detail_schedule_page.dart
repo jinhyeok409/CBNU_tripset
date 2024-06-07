@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:front/screen/schedule/placePathPage.dart';
+import 'package:front/screen/schedule/place_search_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
-import 'place_search_page.dart';
 import 'package:google_place/google_place.dart';
 import 'package:get/get.dart';
+import 'dart:convert';
 
 class DetailScheduleWidget extends StatefulWidget {
   final DateTime rangeStart;
@@ -27,20 +29,14 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget>
   late TabController _tabController;
   late List<DateTime> _days;
   late List<List<Schedule>> _schedules;
+  final String _storageKey = 'saved_schedules';
 
   @override
   void initState() {
     super.initState();
     _initializeDays();
     _tabController = TabController(length: _days.length, vsync: this);
-    _schedules = List.generate(
-      _days.length,
-          (index) => widget.schedules.isNotEmpty && widget.schedules.length > index
-          ? (widget.schedules[index] as List)
-          .map((s) => Schedule.fromMap(s as Map<String, dynamic>))
-          .toList()
-          : [Schedule()],
-    );
+    _loadSchedules();
   }
 
   void _initializeDays() {
@@ -52,10 +48,43 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget>
     }
   }
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
+  Future<void> _loadSchedules() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? savedSchedules = prefs.getString(_storageKey);
+    if (savedSchedules != null) {
+      List<dynamic> decodedSchedules = jsonDecode(savedSchedules);
+      setState(() {
+        _schedules = List.generate(
+          _days.length,
+              (index) => decodedSchedules.isNotEmpty && decodedSchedules.length > index
+              ? (decodedSchedules[index] as List)
+              .map((s) => Schedule.fromMap(s as Map<String, dynamic>))
+              .toList()
+              : [Schedule()],
+        );
+      });
+    } else {
+      setState(() {
+        _schedules = List.generate(
+          _days.length,
+              (index) => widget.schedules.isNotEmpty && widget.schedules.length > index
+              ? (widget.schedules[index] as List)
+              .map((s) => Schedule.fromMap(s as Map<String, dynamic>))
+              .toList()
+              : [Schedule()],
+        );
+      });
+    }
+  }
+
+  Future<void> _saveSchedulesLocally() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<List<Map<String, dynamic>>> schedulesToSave = _schedules
+        .map((daySchedules) =>
+        daySchedules.map((schedule) => schedule.toMap()).toList())
+        .toList();
+    await prefs.setString(_storageKey, jsonEncode(schedulesToSave));
+    print("Schedules saved locally.");
   }
 
   void _pickTime(int dayIndex, int scheduleIndex) async {
@@ -66,6 +95,7 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget>
     if (picked != null) {
       setState(() {
         _schedules[dayIndex][scheduleIndex].time = picked;
+        _saveSchedulesLocally();
       });
     }
   }
@@ -73,12 +103,14 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget>
   void _addSchedule(int dayIndex) {
     setState(() {
       _schedules[dayIndex].add(Schedule());
+      _saveSchedulesLocally();
     });
   }
 
   void _removeSchedule(int dayIndex, int scheduleIndex) {
     setState(() {
       _schedules[dayIndex].removeAt(scheduleIndex);
+      _saveSchedulesLocally();
     });
   }
 
@@ -128,6 +160,7 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget>
               place.geometry?.location?.lat.toString();
           _schedules[dayIndex][scheduleIndex].longitude =
               place.geometry?.location?.lng.toString();
+          _saveSchedulesLocally();
         });
       }
     }
@@ -159,6 +192,7 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget>
       }
     }
 
+    print("Saved Schedules: $paths");
     return paths;
   }
 
@@ -208,11 +242,11 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget>
                         title: Row(
                           children: [
                             Icon(Icons.access_time),
-                            SizedBox(width: 5), // 간격 추가
+                            SizedBox(width: 5),
                             Text(schedule.time != null
                                 ? schedule.time!.format(context)
                                 : "시간 선택"),
-                            SizedBox(width: 10), // 간격 추가
+                            SizedBox(width: 10),
                             Expanded(
                               child: GestureDetector(
                                 onTap: () =>
@@ -255,7 +289,13 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget>
           Align(
             alignment: Alignment.bottomRight,
             child: FloatingActionButton(
-              onPressed: _saveSchedules,
+              onPressed: () async {
+                List<Map<String, dynamic>> paths = await _saveSchedules();
+                print("Saved paths: $paths"); // Debug print
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Schedules saved successfully!")),
+                );
+              },
               child: Icon(Icons.save),
             ),
           ),
