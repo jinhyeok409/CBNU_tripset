@@ -15,9 +15,18 @@ class Register extends StatefulWidget {
 }
 
 class RegisterState extends State<Register> {
+  String? errorMessage;
+
   @override
   Widget build(BuildContext context) {
     Future register(String username, String password) async {
+      if (username.isEmpty || password.isEmpty) {
+        setState(() {
+          errorMessage = "아이디와 비밀번호를 모두 입력해주세요.";
+        });
+        return;
+      }
+
       try {
         String serverUri = dotenv.env['SERVER_URI']!;
         String registerEndpoint = dotenv.env['REGISTER_ENDPOINT']!;
@@ -167,6 +176,17 @@ class RegisterState extends State<Register> {
                         SizedBox(
                           height: 60,
                         ),
+                        if (errorMessage != null)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 20),
+                            child: Text(
+                              errorMessage!,
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
                         InkWell(
                           onTap: () {
                             Navigator.pop(context);
