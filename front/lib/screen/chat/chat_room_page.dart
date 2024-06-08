@@ -1,110 +1,102 @@
-// chat_room_page.dart (채팅방 상세 페이지)
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../controller/chat_room_controller.dart';
 import '../../model/chat_room.dart';
 
-class ChatRoomPage extends StatefulWidget {
+class ChatRoomPage extends StatelessWidget {
   final ChatRoom chatRoom;
 
-  ChatRoomPage({required this.chatRoom});
-
-  @override
-  _ChatRoomPageState createState() => _ChatRoomPageState();
-}
-
-class _ChatRoomPageState extends State<ChatRoomPage> {
-  List<Map<String, String>> messages = [];
-  TextEditingController messageController = TextEditingController();
-  ScrollController scrollController = ScrollController();
-
-  void sendMessage() {
-    if (messageController.text.trim().isNotEmpty) {
-      setState(() {
-        messages.add({
-          'sender': 'Me',
-          'message': messageController.text.trim(),
-        });
-        messageController.clear();
-      });
-      scrollToRecentMessage();
-    }
-  }
-
-  void scrollToRecentMessage() {
-    if (scrollController.hasClients) {
-      scrollController.animateTo(
-        scrollController.position.maxScrollExtent,
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-    }
-  }
-
-  void receiveMessage(String sender, String message) {
-    setState(() {
-      messages.add({
-        'sender': sender,
-        'message': message,
-      });
-    });
-    scrollToRecentMessage();
-  }
-
-  void dismissKeyboard() {
-    FocusScope.of(context).unfocus();
-  }
+  ChatRoomPage({super.key, required this.chatRoom});
 
   @override
   Widget build(BuildContext context) {
+    final ChatRoomController controller =
+        Get.put(ChatRoomController(chatRoom: chatRoom));
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.chatRoom.roomName),
+        title: Text(controller.chatRoom.roomName),
       ),
       body: GestureDetector(
-        onTap: dismissKeyboard,
+        onTap: controller.dismissKeyboard,
         child: Column(
           children: [
             Expanded(
-              child: ListView.builder(
-                controller: scrollController,
-                itemCount: messages.length,
-                itemBuilder: (context, index) {
-                  bool isMe = messages[index]['sender'] == 'Me';
-                  return Align(
-                    alignment:
-                        isMe ? Alignment.centerRight : Alignment.centerLeft,
-                    child: Column(
-                      crossAxisAlignment: isMe
-                          ? CrossAxisAlignment.end
-                          : CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text(
-                            messages[index]['sender']!,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.all(8.0),
-                          padding: const EdgeInsets.all(12.0),
-                          decoration: BoxDecoration(
-                            color: isMe ? Colors.blue : Colors.grey[300],
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                          child: Text(
-                            messages[index]['message']!,
-                            style: TextStyle(
-                              color: isMe ? Colors.white : Colors.black,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+              child: Obx(
+                () => controller.isLoading.value
+                    ? Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                        controller: controller.scrollController,
+                        itemCount: controller.messages.length,
+                        itemBuilder: (context, index) {
+                          bool isMe = controller.messages[index]['sender'] ==
+                              controller.username.value;
+                          bool isEnter =
+                              controller.messages[index]['type'] == 'ENTER';
+                          return isEnter
+                              ? Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 4.0),
+                                    child: Container(
+                                      margin: const EdgeInsets.all(8.0),
+                                      padding: const EdgeInsets.all(12.0),
+                                      decoration: BoxDecoration(
+                                          color: Colors.transparent),
+                                      child: Text(
+                                        controller.messages[index]['message']!,
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : Align(
+                                  alignment: isMe
+                                      ? Alignment.centerRight
+                                      : Alignment.centerLeft,
+                                  child: Column(
+                                    crossAxisAlignment: isMe
+                                        ? CrossAxisAlignment.end
+                                        : CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8.0),
+                                        child: Text(
+                                          controller.messages[index]['sender']!,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: const EdgeInsets.all(8.0),
+                                        padding: const EdgeInsets.all(12.0),
+                                        decoration: BoxDecoration(
+                                          color: isMe
+                                              ? Colors.blue
+                                              : Colors.grey[300],
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                        ),
+                                        child: Text(
+                                          controller.messages[index]
+                                              ['message']!,
+                                          style: TextStyle(
+                                            color: isMe
+                                                ? Colors.white
+                                                : Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                        },
+                      ),
               ),
             ),
             Padding(
@@ -113,7 +105,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                 children: [
                   Expanded(
                     child: TextField(
-                      controller: messageController,
+                      controller: controller.messageController,
                       decoration: InputDecoration(
                         hintText: '메시지를 입력하세요...',
                         border: OutlineInputBorder(
@@ -129,7 +121,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                   SizedBox(width: 8),
                   IconButton(
                     icon: Icon(Icons.send),
-                    onPressed: sendMessage,
+                    onPressed: controller.sendMessage,
                   ),
                 ],
               ),

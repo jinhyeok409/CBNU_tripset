@@ -20,7 +20,7 @@ void main() async {
   await dotenv.load(fileName: ".env");
   String serverUri = dotenv.env['SERVER_URI']!;
   print('서버 URI: $serverUri');
-  
+
   await initializeDateFormatting('ko_KR', null); // 한글 달력을 사용하기 위함
 
   runApp(MyApp());
@@ -64,12 +64,6 @@ class MyApp extends StatelessWidget {
       ],
       // 컨트롤러 바인딩
       initialBinding: AppBinding(),
-      // 고전 네비게이션
-      //initialRoute: '/',
-      // routes: {
-      //   '/Root': (context) => Root(),
-      //   // '/second': (context) => SecondScreen(),
-      // },
       debugShowCheckedModeBanner: false,
       home: Login(),
     );
