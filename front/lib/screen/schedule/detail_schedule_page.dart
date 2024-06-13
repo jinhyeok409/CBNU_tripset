@@ -56,22 +56,24 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget>
       setState(() {
         _schedules = List.generate(
           _days.length,
-              (index) => decodedSchedules.isNotEmpty && decodedSchedules.length > index
-              ? (decodedSchedules[index] as List)
-              .map((s) => Schedule.fromMap(s as Map<String, dynamic>))
-              .toList()
-              : [Schedule()],
+          (index) =>
+              decodedSchedules.isNotEmpty && decodedSchedules.length > index
+                  ? (decodedSchedules[index] as List)
+                      .map((s) => Schedule.fromMap(s as Map<String, dynamic>))
+                      .toList()
+                  : [Schedule()],
         );
       });
     } else {
       setState(() {
         _schedules = List.generate(
           _days.length,
-              (index) => widget.schedules.isNotEmpty && widget.schedules.length > index
-              ? (widget.schedules[index] as List)
-              .map((s) => Schedule.fromMap(s as Map<String, dynamic>))
-              .toList()
-              : [Schedule()],
+          (index) =>
+              widget.schedules.isNotEmpty && widget.schedules.length > index
+                  ? (widget.schedules[index] as List)
+                      .map((s) => Schedule.fromMap(s as Map<String, dynamic>))
+                      .toList()
+                  : [Schedule()],
         );
       });
     }
@@ -81,7 +83,7 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget>
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<List<Map<String, dynamic>>> schedulesToSave = _schedules
         .map((daySchedules) =>
-        daySchedules.map((schedule) => schedule.toMap()).toList())
+            daySchedules.map((schedule) => schedule.toMap()).toList())
         .toList();
     await prefs.setString(_storageKey, jsonEncode(schedulesToSave));
     print("Schedules saved locally.");
@@ -155,7 +157,7 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget>
       if (place != null) {
         setState(() {
           _schedules[dayIndex][scheduleIndex].location =
-          "${scheduleName}: ${place.formattedAddress}";
+              "${scheduleName}: ${place.formattedAddress}";
           _schedules[dayIndex][scheduleIndex].latitude =
               place.geometry?.location?.lat.toString();
           _schedules[dayIndex][scheduleIndex].longitude =
@@ -169,7 +171,7 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget>
   Future<List<Map<String, dynamic>>> _saveSchedules() async {
     List<List<Map<String, dynamic>>> schedulesToSave = _schedules
         .map((daySchedules) =>
-        daySchedules.map((schedule) => schedule.toMap()).toList())
+            daySchedules.map((schedule) => schedule.toMap()).toList())
         .toList();
 
     List<Map<String, dynamic>> paths = [];
@@ -178,7 +180,8 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget>
       List<Map<String, dynamic>> pathSchedules = [];
       for (int j = 0; j < schedulesToSave[i].length; j++) {
         Map<String, dynamic> scheduleMap = schedulesToSave[i][j];
-        if (scheduleMap['latitude'] != null && scheduleMap['longitude'] != null) {
+        if (scheduleMap['latitude'] != null &&
+            scheduleMap['longitude'] != null) {
           pathSchedules.add(scheduleMap);
         }
       }
@@ -243,9 +246,11 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget>
                           children: [
                             Icon(Icons.access_time),
                             SizedBox(width: 5),
-                            Text(schedule.time != null
-                                ? schedule.time!.format(context)
-                                : "시간 선택"),
+                            Text(
+                              schedule.time != null
+                                  ? schedule.time!.format(context)
+                                  : "시간 선택",
+                            ),
                             SizedBox(width: 10),
                             Expanded(
                               child: GestureDetector(
@@ -267,7 +272,8 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget>
                         ),
                         trailing: IconButton(
                           icon: Icon(Icons.delete),
-                          onPressed: () => _removeSchedule(dayIndex, scheduleIndex),
+                          onPressed: () =>
+                              _removeSchedule(dayIndex, scheduleIndex),
                         ),
                       );
                     },
@@ -287,20 +293,7 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget>
       floatingActionButton: Stack(
         children: [
           Align(
-            alignment: Alignment.bottomRight,
-            child: FloatingActionButton(
-              onPressed: () async {
-                List<Map<String, dynamic>> paths = await _saveSchedules();
-                print("Saved paths: $paths"); // Debug print
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Schedules saved successfully!")),
-                );
-              },
-              child: Icon(Icons.save),
-            ),
-          ),
-          Align(
-            alignment: Alignment.bottomLeft,
+            alignment: Alignment(-0.8, 1.0),
             child: FloatingActionButton(
               onPressed: () async {
                 List<Map<String, dynamic>> paths = await _saveSchedules();
@@ -312,6 +305,19 @@ class _DetailScheduleWidgetState extends State<DetailScheduleWidget>
                 );
               },
               child: Icon(Icons.map),
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: FloatingActionButton(
+              onPressed: () async {
+                List<Map<String, dynamic>> paths = await _saveSchedules();
+                print("Saved paths: $paths"); // Debug print
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Schedules saved successfully!")),
+                );
+              },
+              child: Icon(Icons.save),
             ),
           ),
         ],

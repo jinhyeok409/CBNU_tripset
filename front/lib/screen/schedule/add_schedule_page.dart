@@ -31,6 +31,7 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
+        toolbarHeight: 80,
         title: const Text("📅 일정 만들기"),
       ),
       body: SingleChildScrollView(

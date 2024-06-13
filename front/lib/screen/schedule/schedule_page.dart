@@ -63,7 +63,11 @@ class _ScheduleWidget extends State<ScheduleWidget> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: const Text("📅 나의 일정"),
+        toolbarHeight: 80,
+        title: const Text(
+          "📅  나의 일정",
+          style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700),
+        ),
       ),
       body: Stack(
         children: [
@@ -94,7 +98,8 @@ class _ScheduleWidget extends State<ScheduleWidget> {
                       ElevatedButton(
                         onPressed: () async {
                           // 일정 추가 버튼 클릭 시 동작
-                          final newSchedule = await Get.to(AddScheduleWidget());
+                          final newSchedule = await Get.to(AddScheduleWidget(),
+                              transition: Transition.downToUp);
                           if (newSchedule != null) {
                             _addSchedule(newSchedule);
                           }
