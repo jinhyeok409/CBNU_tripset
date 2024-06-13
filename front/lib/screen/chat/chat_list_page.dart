@@ -29,7 +29,7 @@ class ChatListPage extends StatelessWidget {
             children: [
               Padding(padding: EdgeInsets.fromLTRB(10, 0, 0, 0)),
               Text(
-                'TRIPSET.',
+                'CHAT ROOM.',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color(0xFFB0D1F8),

@@ -63,10 +63,21 @@ class _ScheduleWidget extends State<ScheduleWidget> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         toolbarHeight: 80,
-        title: const Text(
-          "📅  나의 일정",
-          style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700),
+        title: Row(
+          children: [
+            Padding(padding: EdgeInsets.fromLTRB(10, 0, 0, 100)),
+            Text(
+              'SCHEDULE.',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFB0D1F8),
+                fontSize: 40,
+              ),
+            ),
+            Spacer(),
+          ],
         ),
       ),
       body: Stack(
